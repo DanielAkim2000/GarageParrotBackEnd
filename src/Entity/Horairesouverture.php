@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -52,6 +53,59 @@ class Horairesouverture
      * })
      */
     private $administrateur;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getJourSemaine()
+    {
+        return $this->jourSemaine;
+    }
+
+    public function setJourSemaine($jourSemaine): static
+    {
+        $this->jourSemaine = $jourSemaine;
+
+        return $this;
+    }
+
+    public function getHeureOuverture(): ?\DateTimeInterface
+    {
+        return $this->heureOuverture;
+    }
+
+    public function setHeureOuverture(\DateTimeInterface $heureOuverture): static
+    {
+        $this->heureOuverture = $heureOuverture;
+
+        return $this;
+    }
+
+    public function getHeureFermeture(): ?\DateTimeInterface
+    {
+        return $this->heureFermeture;
+    }
+
+    public function setHeureFermeture(\DateTimeInterface $heureFermeture): static
+    {
+        $this->heureFermeture = $heureFermeture;
+
+        return $this;
+    }
+
+    public function getAdministrateur(): ?Utilisateurs
+    {
+        return $this->administrateur;
+    }
+
+    public function setAdministrateur(?Utilisateurs $administrateur): static
+    {
+        $this->administrateur = $administrateur;
+
+        return $this;
+    }
 
 
 }

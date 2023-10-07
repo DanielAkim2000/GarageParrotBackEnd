@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -73,6 +74,95 @@ class Contacts
      * })
      */
     private $voiture;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getNumeroTelephone(): ?string
+    {
+        return $this->numeroTelephone;
+    }
+
+    public function setNumeroTelephone(?string $numeroTelephone): static
+    {
+        $this->numeroTelephone = $numeroTelephone;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): static
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    public function getSujet(): ?string
+    {
+        return $this->sujet;
+    }
+
+    public function setSujet(?string $sujet): static
+    {
+        $this->sujet = $sujet;
+
+        return $this;
+    }
+
+    public function getVoiture(): ?Voituresoccasion
+    {
+        return $this->voiture;
+    }
+
+    public function setVoiture(?Voituresoccasion $voiture): static
+    {
+        $this->voiture = $voiture;
+
+        return $this;
+    }
 
 
 }

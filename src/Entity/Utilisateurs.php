@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 /**
  * Utilisateurs
@@ -10,31 +15,34 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="utilisateurs", uniqueConstraints={@ORM\UniqueConstraint(name="utilisateurs_email_key", columns={"email"})})
  * @ORM\Entity
  */
-class Utilisateurs
+class Utilisateurs implements UserInterface,PasswordHasherInterface
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="id", type="guid", nullable=false, options={"default"="uuid_generate_v4()"})
+     * 
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="utilisateurs_id_seq", allocationSize=1, initialValue=1)
+     * 
+     * @ORM\Column(type="uuid", unique=true)
+     * 
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * 
+     * @ORM\CustomIdGenerator(class="doctrine.uuid_generator")
      */
-    private $id = 'uuid_generate_v4()';
+    private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=255, nullable=false)
+     * @ORM\Column(name="firtsname", type="string", length=255, nullable=false)
      */
-    private $nom;
+    private $firstname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="prenom", type="string", length=255, nullable=false)
+     * @ORM\Column(name="lastname", type="string", length=255, nullable=false)
      */
-    private $prenom;
+    private $lastname;
 
     /**
      * @var string
@@ -46,16 +54,104 @@ class Utilisateurs
     /**
      * @var string
      *
-     * @ORM\Column(name="mot_de_passe", type="string", length=255, nullable=false)
+     * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
-    private $motDePasse;
+    private $password;
 
     /**
-     * @var enum_role
+     * @var array|null
      *
-     * @ORM\Column(name="role", type="enum_role", nullable=false)
+     * @ORM\Column(name="roles", type="array", nullable=true)
      */
-    private $role;
+    private $roles;
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): static
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): static
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getRoles(): ?array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(?array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+    public function hash(string $plainPassword): string
+    {
+        // Utiliser l'algorithme bcrypt pour hacher le mot de passe
+        $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
+
+        return $hashedPassword;
+    }
+    public function verify(string $hashedPassword, string $submittedPassword): bool
+    {
+        // Vérifier si le mot de passe soumis correspond au mot de passe haché
+        return password_verify($submittedPassword, $hashedPassword);
+    }
+    public function needsRehash(string $hashedPassword): bool
+    {
+        // Vérifier si le mot de passe nécessite d'être rehaché
+        return password_needs_rehash($hashedPassword, PASSWORD_BCRYPT);
+    }
+        
+
+    function getSalt(){}
+    function eraseCredentials(){}
+    function getUsername(){
+        return $this->firstname+' '+$this->lastname;
+    }
 
 }

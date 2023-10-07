@@ -23,8 +23,11 @@ class EnumRoleType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         // Assurez-vous que la valeur est valide (par exemple, l'une des valeurs de votre ENUM).
-        if (!in_array($value, ['Administrateur', 'Employe'])) {
-            throw new \InvalidArgumentException(sprintf('Invalid value for ENUM role: %s', $value));
+        foreach($value as $v)
+        {
+            if (!in_array($v, ['Admin', 'Employe'])) {
+                throw new \InvalidArgumentException(sprintf('Invalid value for ENUM role: %s', $value));
+            }
         }
 
         return $value; // La valeur est déjà valide pour un ENUM PostgreSQL.

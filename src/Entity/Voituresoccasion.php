@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
+use App\Entity\Utilisateurs;
 
 /**
  * Voituresoccasion
@@ -14,13 +17,17 @@ class Voituresoccasion
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="id", type="guid", nullable=false, options={"default"="uuid_generate_v4()"})
+     * 
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="voituresoccasion_id_seq", allocationSize=1, initialValue=1)
+     * 
+     * @ORM\Column(type="uuid", unique=true)
+     * 
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * 
+     * @ORM\CustomIdGenerator(class="doctrine.uuid_generator")
      */
-    private $id = 'uuid_generate_v4()';
+    
+    private $id;
 
     /**
      * @var string
@@ -80,6 +87,107 @@ class Voituresoccasion
      * })
      */
     private $administrateur;
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function getMarque(): ?string
+    {
+        return $this->marque;
+    }
+
+    public function setMarque(string $marque): static
+    {
+        $this->marque = $marque;
+
+        return $this;
+    }
+
+    public function getModele(): ?string
+    {
+        return $this->modele;
+    }
+
+    public function setModele(string $modele): static
+    {
+        $this->modele = $modele;
+
+        return $this;
+    }
+
+    public function getAnneeMiseEnCirculation(): ?int
+    {
+        return $this->anneeMiseEnCirculation;
+    }
+
+    public function setAnneeMiseEnCirculation(int $anneeMiseEnCirculation): static
+    {
+        $this->anneeMiseEnCirculation = $anneeMiseEnCirculation;
+
+        return $this;
+    }
+
+    public function getPrix(): ?string
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(string $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getKilometrage(): ?int
+    {
+        return $this->kilometrage;
+    }
+
+    public function setKilometrage(int $kilometrage): static
+    {
+        $this->kilometrage = $kilometrage;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getAdministrateur(): ?Utilisateurs
+    {
+        return $this->administrateur;
+    }
+
+    public function setAdministrateur(?Utilisateurs $administrateur): static
+    {
+        $this->administrateur = $administrateur;
+
+        return $this;
+    }
 
 
 }

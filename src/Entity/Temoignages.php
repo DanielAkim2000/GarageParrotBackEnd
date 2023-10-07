@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Temoignages
  *
- * @ORM\Table(name="temoignages", indexes={@ORM\Index(name="IDX_840C86121B65292", columns={"employe_id"})})
+ * @ORM\Table(name="temoignages", indexes={@ORM\Index(name="IDX_840C8612FB88E14F", columns={"utilisateur_id"})})
  * @ORM\Entity
  */
 class Temoignages
@@ -55,10 +56,75 @@ class Temoignages
      *
      * @ORM\ManyToOne(targetEntity="Utilisateurs")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="employe_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="utilisateur_id", referencedColumnName="id")
      * })
      */
-    private $employe;
+    private $utilisateur;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getCommentaire(): ?string
+    {
+        return $this->commentaire;
+    }
+
+    public function setCommentaire(string $commentaire): static
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function getNote(): ?int
+    {
+        return $this->note;
+    }
+
+    public function setNote(?int $note): static
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    public function isModeré(): ?bool
+    {
+        return $this->moderé;
+    }
+
+    public function setModeré(?bool $moderé): static
+    {
+        $this->moderé = $moderé;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateurs
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateurs $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
 
 
 }
