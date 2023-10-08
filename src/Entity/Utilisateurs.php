@@ -33,7 +33,7 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="firtsname", type="string", length=255, nullable=false)
+     * @ORM\Column(name="firstname", type="string", length=255, nullable=false)
      */
     private $firstname;
 
@@ -61,7 +61,7 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     /**
      * @var array|null
      *
-     * @ORM\Column(name="roles", type="array", nullable=true)
+     * @ORM\Column(type="array", nullable=false)
      */
     private $roles;
 
@@ -152,6 +152,10 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     function eraseCredentials(){}
     function getUsername(){
         return $this->firstname+' '+$this->lastname;
+    }
+    function getUserIdentifier()
+    {
+        
     }
 
 }

@@ -4,13 +4,16 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\Utilisateurs;
 
+
 /**
- * Voituresoccasion
+ * Utilisateurs
  *
- * @ORM\Table(name="voituresoccasion", indexes={@ORM\Index(name="IDX_253F5FD37EE5403C", columns={"administrateur_id"})})
+ * @ORM\Table(name="utilisateurs", uniqueConstraints={@ORM\UniqueConstraint(name="utilisateurs_email_key", columns={"email"})})
  * @ORM\Entity
  */
 class Voituresoccasion
@@ -26,7 +29,6 @@ class Voituresoccasion
      * 
      * @ORM\CustomIdGenerator(class="doctrine.uuid_generator")
      */
-    
     private $id;
 
     /**
@@ -79,7 +81,7 @@ class Voituresoccasion
     private $description;
 
     /**
-     * @var \Utilisateurs
+     * @var Utilisateurs
      *
      * @ORM\ManyToOne(targetEntity="Utilisateurs")
      * @ORM\JoinColumns({

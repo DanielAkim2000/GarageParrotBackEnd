@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Temoignages index{% endblock %}
+
+{% block body %}
+    <h1>Temoignages index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Commentaire</th>
+                <th>Note</th>
+                <th>Moderé</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for temoignage in temoignages %}
+            <tr>
+                <td>{{ temoignage.id }}</td>
+                <td>{{ temoignage.nom }}</td>
+                <td>{{ temoignage.commentaire }}</td>
+                <td>{{ temoignage.note }}</td>
+                <td>{{ temoignage.moderé ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_temoignages_show', {'id': temoignage.id}) }}">show</a>
+                    <a href="{{ path('app_temoignages_edit', {'id': temoignage.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_temoignages_new') }}">Create new</a>
+{% endblock %}
