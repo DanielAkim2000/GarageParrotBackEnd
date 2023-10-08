@@ -113,13 +113,6 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function getRoles(): ?string
     {
         return $this->roles;
@@ -149,7 +142,14 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
         // Vérifier si le mot de passe nécessite d'être rehaché
         return password_needs_rehash($hashedPassword, PASSWORD_BCRYPT);
     }
+     public function setPassword(string $password): static
+    {
         
+        $this->password = $this->hash($password);
+
+        return $this;
+    }
+    
 
     function getSalt(){}
     function eraseCredentials(){}

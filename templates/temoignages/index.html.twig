@@ -12,7 +12,7 @@
                 <th>Nom</th>
                 <th>Commentaire</th>
                 <th>Note</th>
-                <th>Moderé</th>
+                <th>Modere</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -23,7 +23,7 @@
                 <td>{{ temoignage.nom }}</td>
                 <td>{{ temoignage.commentaire }}</td>
                 <td>{{ temoignage.note }}</td>
-                <td>{{ temoignage.moderé ? 'Yes' : 'No' }}</td>
+                <td>{{ temoignage.modere ? 'Yes' : 'No' }}</td>
                 <td>
                     <a href="{{ path('app_temoignages_show', {'id': temoignage.id}) }}">show</a>
                     <a href="{{ path('app_temoignages_edit', {'id': temoignage.id}) }}">edit</a>
