@@ -8,8 +8,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>JourSemaine</th>
+                <th>Jour</th>
                 <th>HeureOuverture</th>
                 <th>HeureFermeture</th>
                 <th>actions</th>
@@ -18,7 +17,6 @@
         <tbody>
         {% for horairesouverture in horairesouvertures %}
             <tr>
-                <td>{{ horairesouverture.id }}</td>
                 <td>{{ horairesouverture.jourSemaine }}</td>
                 <td>{{ horairesouverture.heureOuverture ? horairesouverture.heureOuverture|date('H:i:s') : '' }}</td>
                 <td>{{ horairesouverture.heureFermeture ? horairesouverture.heureFermeture|date('H:i:s') : '' }}</td>
@@ -29,7 +27,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="4">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\JourSemaine;
 
 /**
  * Horairesouverture
@@ -24,9 +25,12 @@ class Horairesouverture
     private $id;
 
     /**
-     * @var jour_semaine
+     * @var JourSemaine
      *
-     * @ORM\Column(name="jour_semaine", type="jour_semaine", nullable=false)
+     * @ORM\OneToOne(targetEntity="JourSemaine")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="jour_semaine", referencedColumnName="id")
+     * })
      */
     private $jourSemaine;
 
@@ -45,7 +49,7 @@ class Horairesouverture
     private $heureFermeture;
 
     /**
-     * @var \Utilisateurs
+     * @var Utilisateurs
      *
      * @ORM\ManyToOne(targetEntity="Utilisateurs")
      * @ORM\JoinColumns({
@@ -53,15 +57,21 @@ class Horairesouverture
      * })
      */
     private $administrateur;
-
+    
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getJourSemaine()
+    public function getJourSemaine():?JourSemaine
     {
-        return $this->jourSemaine;
+        if($this->jourSemaine == NULL){
+            return NULL;
+        }
+        else
+        {
+            return $this->jourSemaine;
+        }
     }
 
     public function setJourSemaine($jourSemaine): static

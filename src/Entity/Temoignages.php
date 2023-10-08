@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -52,7 +51,7 @@ class Temoignages
     private $moderé = false;
 
     /**
-     * @var \Utilisateurs
+     * @var Utilisateurs
      *
      * @ORM\ManyToOne(targetEntity="Utilisateurs")
      * @ORM\JoinColumns({
@@ -60,71 +59,6 @@ class Temoignages
      * })
      */
     private $utilisateur;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getCommentaire(): ?string
-    {
-        return $this->commentaire;
-    }
-
-    public function setCommentaire(string $commentaire): static
-    {
-        $this->commentaire = $commentaire;
-
-        return $this;
-    }
-
-    public function getNote(): ?int
-    {
-        return $this->note;
-    }
-
-    public function setNote(?int $note): static
-    {
-        $this->note = $note;
-
-        return $this;
-    }
-
-    public function isModeré(): ?bool
-    {
-        return $this->moderé;
-    }
-
-    public function setModeré(?bool $moderé): static
-    {
-        $this->moderé = $moderé;
-
-        return $this;
-    }
-
-    public function getUtilisateur(): ?Utilisateurs
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?Utilisateurs $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
 
 
 }

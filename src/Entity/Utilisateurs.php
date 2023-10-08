@@ -59,11 +59,13 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     private $password;
 
     /**
-     * @var array|null
+     * @var string|null
      *
-     * @ORM\Column(type="array", nullable=false)
+     * @ORM\Column(type="string", nullable=false)
      */
-    private $roles;
+    private $roles='Visiteur';
+
+
 
     public function getId(): ?string
     {
@@ -118,14 +120,15 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
         return $this;
     }
 
-    public function getRoles(): ?array
+    public function getRoles(): ?string
     {
         return $this->roles;
     }
 
-    public function setRoles(?array $roles): static
+    public function setRoles(?string $values): static
     {
-        $this->roles = $roles;
+
+        $this->roles = $values;
 
         return $this;
     }
@@ -151,11 +154,13 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     function getSalt(){}
     function eraseCredentials(){}
     function getUsername(){
-        return $this->firstname+' '+$this->lastname;
+        return $this->firstname.' '.$this->lastname;
     }
     function getUserIdentifier()
     {
         
     }
-
+    public function __toString() {
+        return $this->getUsername();
+    }
 }

@@ -39,34 +39,5 @@ class Equipementsoptions
      */
     private $voiture;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getVoiture(): ?Voituresoccasion
-    {
-        return $this->voiture;
-    }
-
-    public function setVoiture(?Voituresoccasion $voiture): static
-    {
-        $this->voiture = $voiture;
-
-        return $this;
-    }
-
 
 }
