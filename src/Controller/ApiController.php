@@ -50,4 +50,9 @@ class ApiController extends AbstractController
     {
         return $this->temoignagesController->getTemoignages($e);
     }
+    #[Route('/api/horaires', name: 'app_horaires')]
+    public function getHoraires(EntityManagerInterface $e)
+    {
+        return $this->horairesOuvertureController->getHoraires($e);
+    }
 }

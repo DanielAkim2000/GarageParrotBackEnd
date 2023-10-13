@@ -81,4 +81,19 @@ class HorairesouvertureController extends AbstractController
 
         return $this->redirectToRoute('app_horairesouverture_index', [], Response::HTTP_SEE_OTHER);
     }
+    public function getHoraires(EntityManagerInterface $entityManager): Response
+    {
+        $horairesouvertures = $entityManager
+            ->getRepository(Horairesouverture::class)
+            ->findAll();
+        $horairesouvertures = array_map(function ($horairesouverture) {
+            // recuperation des Jour de la Semaine
+            $horairesouverture->getJourSemaine();
+            return $horairesouverture;
+        }, $horairesouvertures);
+
+        return $this->json([
+            'horairesouvertures' => $horairesouvertures,
+        ],200,[],['groups' => 'horaires']);
+    }
 }

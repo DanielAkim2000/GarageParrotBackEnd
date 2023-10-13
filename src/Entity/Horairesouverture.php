@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\JourSemaine;
+use DateTimeInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Horairesouverture
@@ -31,6 +33,7 @@ class Horairesouverture
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="jour_semaine", referencedColumnName="id")
      * })
+     * @Groups("horaires")
      */
     private $jourSemaine;
 
@@ -38,6 +41,7 @@ class Horairesouverture
      * @var \DateTime
      *
      * @ORM\Column(name="heure_ouverture", type="time", nullable=false)
+     * @Groups("horaires")
      */
     private $heureOuverture;
 
@@ -45,6 +49,7 @@ class Horairesouverture
      * @var \DateTime
      *
      * @ORM\Column(name="heure_fermeture", type="time", nullable=false)
+     * @Groups("horaires")
      */
     private $heureFermeture;
 
@@ -81,26 +86,28 @@ class Horairesouverture
         return $this;
     }
 
-    public function getHeureOuverture(): ?\DateTimeInterface
+    public function getHeureOuverture(): ?string
     {
-        return $this->heureOuverture;
+        return $this->heureOuverture->format('H:i');
     }
 
-    public function setHeureOuverture(\DateTimeInterface $heureOuverture): static
+    public function setHeureOuverture(\DateTime $heureOuverture): static
     {
-        $this->heureOuverture = $heureOuverture;
+        $heure = new \DateTime($heureOuverture->format('H:i:00'));
+        $this->heureOuverture = $heure;
 
         return $this;
     }
 
-    public function getHeureFermeture(): ?\DateTimeInterface
+    public function getHeureFermeture(): ?string
     {
-        return $this->heureFermeture;
+        return $this->heureFermeture->format('H:i');
     }
 
-    public function setHeureFermeture(\DateTimeInterface $heureFermeture): static
+    public function setHeureFermeture(\DateTime $heureFermeture): static
     {
-        $this->heureFermeture = $heureFermeture;
+        $heure = new \DateTime($heureFermeture->format('H:i:00'));
+        $this->heureFermeture = $heure;
 
         return $this;
     }

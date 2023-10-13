@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 /**
  * JourSemaine
@@ -19,6 +21,7 @@ class JourSemaine
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
      * @ORM\SequenceGenerator(sequenceName="jour_semaine_id_seq", allocationSize=1, initialValue=1)
+     * @Groups("horaires")
      */
     private $id;
 
