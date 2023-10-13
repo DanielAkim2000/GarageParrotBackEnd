@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Temoignages
@@ -20,6 +21,7 @@ class Temoignages
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
      * @ORM\SequenceGenerator(sequenceName="temoignages_id_seq", allocationSize=1, initialValue=1)
+     * @Groups("Temoignages")
      */
     private $id;
 
@@ -27,6 +29,7 @@ class Temoignages
      * @var string|null
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
+     * @Groups("Temoignages")
      */
     private $nom;
 
@@ -34,6 +37,7 @@ class Temoignages
      * @var string
      *
      * @ORM\Column(name="commentaire", type="text", nullable=false)
+     * @Groups("Temoignages")
      */
     private $commentaire;
 
@@ -41,6 +45,7 @@ class Temoignages
      * @var int|null
      *
      * @ORM\Column(name="note", type="integer", nullable=true)
+     * @Groups("Temoignages")
      */
     private $note;
 
@@ -48,6 +53,7 @@ class Temoignages
      * @var bool|null
      *
      * @ORM\Column(name="modere", type="boolean", nullable=true)
+     * @Groups("Temoignages")
      */
     private $modere = false;
 

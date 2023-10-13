@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Entity;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,18 +15,24 @@ class Voituresoccasion
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="id", type="guid", nullable=false, options={"default"="uuid_generate_v4()"})
+     * 
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="voituresoccasion_id_seq", allocationSize=1, initialValue=1)
+     * 
+     * @ORM\Column(type="uuid", unique=true)
+     * 
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * 
+     * @ORM\CustomIdGenerator(class="doctrine.uuid_generator")
+     * 
+     * @Groups("VoituresOccasions") 
      */
-    private $id = 'uuid_generate_v4()';
+    private $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="marque", type="string", length=255, nullable=false)
+     * @Groups("VoituresOccasions") 
      */
     private $marque;
 
@@ -33,6 +40,7 @@ class Voituresoccasion
      * @var string
      *
      * @ORM\Column(name="modele", type="string", length=255, nullable=false)
+     * @Groups("VoituresOccasions") 
      */
     private $modele;
 
@@ -40,6 +48,7 @@ class Voituresoccasion
      * @var int
      *
      * @ORM\Column(name="annee_mise_en_circulation", type="integer", nullable=false)
+     * @Groups("VoituresOccasions") 
      */
     private $anneeMiseEnCirculation;
 
@@ -47,6 +56,7 @@ class Voituresoccasion
      * @var string
      *
      * @ORM\Column(name="prix", type="decimal", precision=10, scale=2, nullable=false)
+     * @Groups("VoituresOccasions") 
      */
     private $prix;
 
@@ -54,6 +64,7 @@ class Voituresoccasion
      * @var int
      *
      * @ORM\Column(name="kilometrage", type="integer", nullable=false)
+     * @Groups("VoituresOccasions") 
      */
     private $kilometrage;
 
@@ -61,6 +72,7 @@ class Voituresoccasion
      * @var string|null
      *
      * @ORM\Column(name="image", type="string", length=255, nullable=true)
+     * @Groups("VoituresOccasions") 
      */
     private $image;
 
@@ -68,11 +80,12 @@ class Voituresoccasion
      * @var string|null
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups("VoituresOccasions") 
      */
     private $description;
 
     /**
-     * @var \Utilisateurs
+     * @var Utilisateurs
      *
      * @ORM\ManyToOne(targetEntity="Utilisateurs")
      * @ORM\JoinColumns({
@@ -80,6 +93,107 @@ class Voituresoccasion
      * })
      */
     private $administrateur;
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function getMarque(): ?string
+    {
+        return $this->marque;
+    }
+
+    public function setMarque(string $marque): static
+    {
+        $this->marque = $marque;
+
+        return $this;
+    }
+
+    public function getModele(): ?string
+    {
+        return $this->modele;
+    }
+
+    public function setModele(string $modele): static
+    {
+        $this->modele = $modele;
+
+        return $this;
+    }
+
+    public function getAnneeMiseEnCirculation(): ?int
+    {
+        return $this->anneeMiseEnCirculation;
+    }
+
+    public function setAnneeMiseEnCirculation(int $anneeMiseEnCirculation): static
+    {
+        $this->anneeMiseEnCirculation = $anneeMiseEnCirculation;
+
+        return $this;
+    }
+
+    public function getPrix(): ?string
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(string $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getKilometrage(): ?int
+    {
+        return $this->kilometrage;
+    }
+
+    public function setKilometrage(int $kilometrage): static
+    {
+        $this->kilometrage = $kilometrage;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getAdministrateur(): ?Utilisateurs
+    {
+        return $this->administrateur;
+    }
+
+    public function setAdministrateur(?Utilisateurs $administrateur): static
+    {
+        $this->administrateur = $administrateur;
+
+        return $this;
+    }
 
 
 }

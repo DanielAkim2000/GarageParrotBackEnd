@@ -81,4 +81,15 @@ class TemoignagesController extends AbstractController
 
         return $this->redirectToRoute('app_temoignages_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    public function getTemoignages(EntityManagerInterface $entityManager): Response
+    {
+        $temoignages = $entityManager
+            ->getRepository(Temoignages::class)
+            ->findAll();
+
+        return $this->json([
+            'temoignages' => $temoignages,
+        ],200,[],['groups'=>'Temoignages']);
+    }
 }

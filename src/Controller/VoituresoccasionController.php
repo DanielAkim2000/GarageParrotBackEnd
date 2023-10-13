@@ -81,4 +81,15 @@ class VoituresoccasionController extends AbstractController
 
         return $this->redirectToRoute('app_voituresoccasion_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    public function getVoitures(EntityManagerInterface $entityManager): Response
+    {
+        $voituresoccasions = $entityManager
+            ->getRepository(Voituresoccasion::class)
+            ->findAll();
+
+        return $this->json([
+            'voituresoccasions' => $voituresoccasions,
+        ],200,[],['groups' => 'VoituresOccasions']);
+    }
 }

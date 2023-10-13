@@ -6,23 +6,25 @@ use App\Entity\Services;
 use App\Form\ServicesType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Route('/services')]
 class ServicesController extends AbstractController
 {
     #[Route('/', name: 'app_services_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Groups('services')]
+    public function getServices(EntityManagerInterface $entityManager): Response
     {
         $services = $entityManager
             ->getRepository(Services::class)
             ->findAll();
-
-        return $this->render('services/index.html.twig', [
-            'services' => $services,
-        ]);
+        return $this->json([
+            'services' => $services
+        ],200, [],['groups' =>'services']);
     }
 
     #[Route('/new', name: 'app_services_new', methods: ['GET', 'POST'])]

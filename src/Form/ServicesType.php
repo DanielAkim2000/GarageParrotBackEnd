@@ -15,6 +15,7 @@ class ServicesType extends AbstractType
             ->add('nom')
             ->add('description')
             ->add('administrateur')
+            ->add('image')
         ;
     }
 
