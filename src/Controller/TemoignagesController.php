@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Exception;
 
 #[Route('/temoignages')]
 class TemoignagesController extends AbstractController
@@ -91,5 +92,36 @@ class TemoignagesController extends AbstractController
         return $this->json([
             'temoignages' => $temoignages,
         ],200,[],['groups'=>'Temoignages']);
+    }
+
+    public function insert(Request $request,EntityManagerInterface $entityManager){
+        try{
+            $temoignagesEntity = new Temoignages();
+            $temoignages = json_decode($request->getContent(),true);
+            if(isset($temoignages['nom'])){
+                $temoignagesEntity->setNom($temoignages['nom']);
+            }
+            else{
+                throw new Exception('Précisez votre nom');
+            }
+            if(isset($temoignages['note'])){
+                $temoignagesEntity->setNote($temoignages['note']);
+            }
+            else{
+                throw new Exception('Laisser une note');
+            }
+            if(isset($temoignages['commentaire'])){
+                $temoignagesEntity->setCommentaire($temoignages['commentaire']);
+            }
+            else{
+                throw new Exception('Laisser une commentaire');
+            }
+            $entityManager->persist($temoignagesEntity);
+            $entityManager->flush();
+            return $this->json(['message' => 'Votre avis a bien été envoyé']);
+        }
+        catch(Exception $e){
+            return $this->json(['message' => $e->getMessage()]);
+        }
     }
 }

@@ -18,7 +18,6 @@ class ContactsType extends AbstractType
             ->add('numeroTelephone')
             ->add('message')
             ->add('sujet')
-            ->add('voiture')
         ;
     }
 

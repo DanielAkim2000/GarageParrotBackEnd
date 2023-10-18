@@ -1,3 +1,29 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+app_services:
+   path: /api/services
+   controller: App\Controller\ApiController::getServices
+   methods: GET
+
+app_voitures: 
+    path: /api/voitures
+    controller: App\Controller\ApiController::getVoitures
+    methods: GET
+
+app_temoignages:
+    path: /api/temoignages
+    controller: App\Controller\ApiController::getTemoignages
+    methods: GET
+
+app_horaires:
+    path: /api/horaires
+    controller: App\Controller\ApiController::getHoraires
+    methods: GET
+
+app_insertcontact:
+    path: /api/endpointcontact
+    controller: App\Controller\ApiController::insertContact
+    methods: GET|POST  
+
+app_insertavis:
+    path: /api/endpointavis
+    controller: App\Controller\ApiController::insertAvis
+    methods: GET|POST 

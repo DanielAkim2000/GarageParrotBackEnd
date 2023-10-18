@@ -66,7 +66,7 @@ class Contacts
     private $sujet;
 
     /**
-     * @var \Voituresoccasion
+     * @var Voituresoccasion
      *
      * @ORM\ManyToOne(targetEntity="Voituresoccasion")
      * @ORM\JoinColumns({

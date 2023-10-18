@@ -20,8 +20,8 @@ class ServicesController extends AbstractController
     public function getServices(EntityManagerInterface $entityManager): Response
     {
         $services = $entityManager
-            ->getRepository(Services::class)
-            ->findAll();
+        ->getRepository(Services::class)
+        ->findAll();
         return $this->json([
             'services' => $services
         ],200, [],['groups' =>'services']);
