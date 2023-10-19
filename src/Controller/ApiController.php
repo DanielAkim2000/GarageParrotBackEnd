@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Utilisateurs;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,12 +21,15 @@ class ApiController extends AbstractController
 
     private $contactsController;
 
+    private $utilisateursController;
+
     public function __construct(
         ServicesController $servicesController,
         HorairesouvertureController $horairesOuvertureController,
         TemoignagesController $temoignagesController,
         VoituresoccasionController $voituresOccasionController,
-        ContactsController $contactsController
+        ContactsController $contactsController,
+        UtilisateursController $utilisateursController
     )
     {
         $this->servicesController = $servicesController;
@@ -33,6 +37,7 @@ class ApiController extends AbstractController
         $this->temoignagesController= $temoignagesController;
         $this->voituresOccasionController = $voituresOccasionController;
         $this->contactsController = $contactsController;
+        $this->utilisateursController = $utilisateursController;
     }
 
     public function getServices(EntityManagerInterface $e)
@@ -65,6 +70,12 @@ class ApiController extends AbstractController
     {
         
         return $this->temoignagesController->insert($request,$e);
+    }
+
+    public function getEmploye(EntityManagerInterface $e)
+    {
+        
+        return $this->utilisateursController->getEmploye($e);
     }
 
 

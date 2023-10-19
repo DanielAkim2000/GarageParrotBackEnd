@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 /**
@@ -27,6 +28,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * 
      * @ORM\CustomIdGenerator(class="doctrine.uuid_generator")
+     * 
+     * @Groups("Employe")
      */
     private $id;
 
@@ -34,6 +37,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=false)
+     * 
+     * @Groups("Employe")
      */
     private $firstname;
 
@@ -41,6 +46,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=false)
+     * 
+     * @Groups("Employe")
      */
     private $lastname;
 
@@ -48,6 +55,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * 
+     * @Groups("Employe")
      */
     private $email;
 
@@ -55,6 +64,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
+     * 
+     * @Groups("Employe")
      */
     private $password;
 
@@ -62,6 +73,8 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
      * @var string|null
      *
      * @ORM\Column(type="string", nullable=false)
+     * 
+     * @Groups("Employe")
      */
     private $roles='Visiteur';
 

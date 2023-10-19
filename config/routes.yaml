@@ -27,3 +27,8 @@ app_insertavis:
     path: /api/endpointavis
     controller: App\Controller\ApiController::insertAvis
     methods: GET|POST 
+
+app_employe:
+    path: /api/employes
+    controller: App\Controller\ApiController::getEmploye
+    methods: GET

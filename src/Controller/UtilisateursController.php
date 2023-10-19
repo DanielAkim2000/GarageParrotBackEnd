@@ -81,4 +81,20 @@ class UtilisateursController extends AbstractController
 
         return $this->redirectToRoute('app_utilisateurs_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    public function getEmploye(EntityManagerInterface $entityManager): Response
+    {
+        $utilisateursRepository = $entityManager->getRepository(Utilisateurs::class);
+        //filtre permettant de faire une instruction where
+        $queryBuilder = $utilisateursRepository->createQueryBuilder('employe');
+        $queryBuilder
+            ->where('employe.roles = :valeur')
+            ->setParameter('valeur', 'Visiteur');
+        // Ajout des employes dans utilisateurs
+        $utilisateurs = $queryBuilder->getQuery()->getResult();
+            
+        return $this->json(
+            ['utilisateurs' => $utilisateurs ]
+        ,200,[],['groups' => 'Employe']);
+    }
 }
