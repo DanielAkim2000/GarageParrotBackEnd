@@ -8,6 +8,7 @@ use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
 /**
@@ -16,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Table(name="utilisateurs", uniqueConstraints={@ORM\UniqueConstraint(name="utilisateurs_email_key", columns={"email"})})
  * @ORM\Entity
  */
-class Utilisateurs implements UserInterface,PasswordHasherInterface
+class Utilisateurs implements UserInterface,PasswordHasherInterface,PasswordAuthenticatedUserInterface
 {
     /**
      * @var string
@@ -72,11 +73,11 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     /**
      * @var string|null
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="array", nullable=false)
      * 
      * @Groups("Employe")
      */
-    private $roles='Visiteur';
+    private $roles;
 
 
 
@@ -126,14 +127,17 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
         return $this->password;
     }
 
-    public function getRoles(): ?string
+    public function getRoles(): ?array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
-    public function setRoles(?string $values): static
+    public function setRoles(?array $values): static
     {
-
         $this->roles = $values;
 
         return $this;
@@ -164,16 +168,19 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface
     }
     
 
-    function getSalt(){}
-    function eraseCredentials(){}
+    function getSalt(){
+    }
+    function eraseCredentials(){
+        
+    }
     function getUsername(){
-        return $this->firstname.' '.$this->lastname;
+        return $this->email;
     }
     function getUserIdentifier()
     {
-        
+        return $this->email;
     }
-    public function __toString() {
+    public function __toString(){
         return $this->getUsername();
     }
 }

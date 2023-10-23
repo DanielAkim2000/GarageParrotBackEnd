@@ -32,3 +32,8 @@ app_employe:
     path: /api/employes
     controller: App\Controller\ApiController::getEmploye
     methods: GET
+
+api_login:
+    path: /api/login
+    controller: App\Controller\Api\LoginController::ApiLogin
+    methods: POST

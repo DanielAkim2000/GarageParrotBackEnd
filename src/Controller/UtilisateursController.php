@@ -89,7 +89,7 @@ class UtilisateursController extends AbstractController
         $queryBuilder = $utilisateursRepository->createQueryBuilder('employe');
         $queryBuilder
             ->where('employe.roles = :valeur')
-            ->setParameter('valeur', 'Visiteur');
+            ->setParameter('valeur', 'ROLE_USER');
         // Ajout des employes dans utilisateurs
         $utilisateurs = $queryBuilder->getQuery()->getResult();
             
