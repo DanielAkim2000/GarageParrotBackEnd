@@ -4,11 +4,12 @@ namespace App\Entity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Voituresoccasion
  *
- * @ORM\Table(name="voituresoccasion", indexes={@ORM\Index(name="IDX_253F5FD37EE5403C", columns={"administrateur_id"})})
+ * @ORM\Table(name="voituresoccasion")
  * @ORM\Entity
  */
 class Voituresoccasion
@@ -68,13 +69,13 @@ class Voituresoccasion
      */
     private $kilometrage;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="image", type="string", length=255, nullable=true)
-     * @Groups("VoituresOccasions") 
+     /**
+     * @ORM\Column(nullable=true)
      */
-    private $image;
+    private ?string $imagePath = null; // Remplacez imageName par imagePath
+    
+    private ?File $imageFile = null;
+
 
     /**
      * @var string|null
@@ -83,16 +84,6 @@ class Voituresoccasion
      * @Groups("VoituresOccasions") 
      */
     private $description;
-
-    /**
-     * @var Utilisateurs
-     *
-     * @ORM\ManyToOne(targetEntity="Utilisateurs")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="administrateur_id", referencedColumnName="id")
-     * })
-     */
-    private $administrateur;
 
     public function getId(): ?string
     {
@@ -159,16 +150,24 @@ class Voituresoccasion
         return $this;
     }
 
-    public function getImage(): ?string
+    public function setImageFile(?File $imageFile = null): void
     {
-        return $this->image;
+        $this->imageFile = $imageFile;
     }
 
-    public function setImage(?string $image): static
+    public function getImageFile(): ?File
     {
-        $this->image = $image;
+        return $this->imageFile;
+    }
 
-        return $this;
+    public function setImagePath(?string $imagePath): void
+    {
+        $this->imagePath = $imagePath;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
     }
 
     public function getDescription(): ?string
@@ -182,18 +181,4 @@ class Voituresoccasion
 
         return $this;
     }
-
-    public function getAdministrateur(): ?Utilisateurs
-    {
-        return $this->administrateur;
-    }
-
-    public function setAdministrateur(?Utilisateurs $administrateur): static
-    {
-        $this->administrateur = $administrateur;
-
-        return $this;
-    }
-
-
 }

@@ -5,14 +5,14 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Services
- *
- * @ORM\Table(name="services", indexes={@ORM\Index(name="IDX_7332E1697EE5403C", columns={"administrateur_id"})})
+ * @ORM\Table(name="services")
  * @ORM\Entity
  */
-class Services
+ class Services
 {
     /**
      * @var int
@@ -40,21 +40,15 @@ class Services
     private $description;
 
     /**
-     * @var string
-     * @Groups("services") 
-     * @ORM\Column(name="image", type="string", length=255, nullable=false)
+     * @ORM\Column(nullable="true")
      */
-    private $image;
+    private ?string $imageName = null;
 
     /**
-     * @var Utilisateurs
-     *
-     * @ORM\ManyToOne(targetEntity="Utilisateurs")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="administrateur_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(nullable="true")
      */
-    private $administrateur;
+    private ?int $imageSize = null;
+    private ?File $imageFile = null;
 
     public function getId(): ?int
     {
@@ -84,29 +78,43 @@ class Services
 
         return $this;
     }
-
-    public function getAdministrateur(): ?Utilisateurs
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
     {
-        return $this->administrateur;
+        $this->imageFile = $imageFile;
     }
 
-    public function setAdministrateur(?Utilisateurs $administrateur): static
+    public function getImageFile(): ?File
     {
-        $this->administrateur = $administrateur;
-
-        return $this;
+        return $this->imageFile;
     }
 
-    public function getImage():string
+    public function setImageName(?string $imageName): void
     {
-        return $this->image;
+        $this->imageName = $imageName;
     }
 
-    public function setImage(string $image): static
+    public function getImageName(): ?string
     {
-        $this->image = $image;
+        return $this->imageName;
+    }
 
-        return $this;
+    public function setImageSize(?int $imageSize): void
+    {
+        $this->imageSize = $imageSize;
+    }
+
+    public function getImageSize(): ?int
+    {
+        return $this->imageSize;
     }
 
 }

@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * Temoignages
  *
- * @ORM\Table(name="temoignages", indexes={@ORM\Index(name="IDX_840C8612FB88E14F", columns={"utilisateur_id"})})
+ * @ORM\Table(name="temoignages")
  * @ORM\Entity
  */
 class Temoignages
@@ -56,16 +56,6 @@ class Temoignages
      * @Groups("Temoignages")
      */
     private $modere = false;
-
-    /**
-     * @var Utilisateurs
-     *
-     * @ORM\ManyToOne(targetEntity="Utilisateurs")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="utilisateur_id", referencedColumnName="id")
-     * })
-     */
-    private $utilisateur;
 
     public function getId(): ?int
     {
@@ -119,18 +109,4 @@ class Temoignages
 
         return $this;
     }
-
-    public function getUtilisateur(): ?Utilisateurs
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?Utilisateurs $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
-
-
 }

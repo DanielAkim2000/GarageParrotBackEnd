@@ -127,14 +127,15 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface,PasswordAuth
         return $this->password;
     }
 
-    public function getRoles(): ?array
+    public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        $roles = $this->roles ?? [];
+        // Assurez-vous que chaque utilisateur a au moins le rôle ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
+
 
     public function setRoles(?array $values): static
     {
@@ -142,6 +143,7 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface,PasswordAuth
 
         return $this;
     }
+
     public function hash(string $plainPassword): string
     {
         // Utiliser l'algorithme bcrypt pour hacher le mot de passe

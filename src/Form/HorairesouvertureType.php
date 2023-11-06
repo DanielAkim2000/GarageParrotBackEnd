@@ -16,7 +16,6 @@ class HorairesouvertureType extends AbstractType
             ->add('jourSemaine')
             ->add('heureOuverture')
             ->add('heureFermeture')
-            ->add('administrateur')
         ;
     }
 

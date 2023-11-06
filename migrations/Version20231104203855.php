@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231020193038 extends AbstractMigration
+final class Version20231104203855 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -32,25 +32,17 @@ final class Version20231020193038 extends AbstractMigration
         $this->addSql('CREATE TABLE equipementsoptions (id INT NOT NULL, voiture_id UUID DEFAULT NULL, nom VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_7561C74D181A8BA ON equipementsoptions (voiture_id)');
         $this->addSql('COMMENT ON COLUMN equipementsoptions.voiture_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('CREATE TABLE horairesouverture (id INT NOT NULL, jour_semaine VARCHAR(20) DEFAULT NULL, administrateur_id UUID DEFAULT NULL, heure_ouverture TIME(0) WITHOUT TIME ZONE NOT NULL, heure_fermeture TIME(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE horairesouverture (id INT NOT NULL, jour_semaine VARCHAR(20) DEFAULT NULL, heure_ouverture TIME(0) WITHOUT TIME ZONE NOT NULL, heure_fermeture TIME(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8C1CC7CBDE8E3089 ON horairesouverture (jour_semaine)');
-        $this->addSql('CREATE INDEX IDX_8C1CC7CB7EE5403C ON horairesouverture (administrateur_id)');
-        $this->addSql('COMMENT ON COLUMN horairesouverture.administrateur_id IS \'(DC2Type:uuid)\'');
         $this->addSql('CREATE TABLE jour_semaine (id VARCHAR(20) NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE services (id INT NOT NULL, administrateur_id UUID DEFAULT NULL, nom VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, image VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX IDX_7332E1697EE5403C ON services (administrateur_id)');
-        $this->addSql('COMMENT ON COLUMN services.administrateur_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('CREATE TABLE temoignages (id INT NOT NULL, utilisateur_id UUID DEFAULT NULL, nom VARCHAR(255) DEFAULT NULL, commentaire TEXT NOT NULL, note INT DEFAULT NULL, modere BOOLEAN DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX IDX_840C8612FB88E14F ON temoignages (utilisateur_id)');
-        $this->addSql('COMMENT ON COLUMN temoignages.utilisateur_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('CREATE TABLE services (id INT NOT NULL, nom VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, image_name VARCHAR(255) DEFAULT NULL, image_size INT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE temoignages (id INT NOT NULL, nom VARCHAR(255) DEFAULT NULL, commentaire TEXT NOT NULL, note INT DEFAULT NULL, modere BOOLEAN DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE utilisateurs (id UUID NOT NULL, firstname VARCHAR(255) NOT NULL, lastname VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, roles TEXT NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX utilisateurs_email_key ON utilisateurs (email)');
         $this->addSql('COMMENT ON COLUMN utilisateurs.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN utilisateurs.roles IS \'(DC2Type:array)\'');
-        $this->addSql('CREATE TABLE voituresoccasion (id UUID NOT NULL, administrateur_id UUID DEFAULT NULL, marque VARCHAR(255) NOT NULL, modele VARCHAR(255) NOT NULL, annee_mise_en_circulation INT NOT NULL, prix NUMERIC(10, 2) NOT NULL, kilometrage INT NOT NULL, image VARCHAR(255) DEFAULT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX IDX_253F5FD37EE5403C ON voituresoccasion (administrateur_id)');
+        $this->addSql('CREATE TABLE voituresoccasion (id UUID NOT NULL, marque VARCHAR(255) NOT NULL, modele VARCHAR(255) NOT NULL, annee_mise_en_circulation INT NOT NULL, prix NUMERIC(10, 2) NOT NULL, kilometrage INT NOT NULL, image_path VARCHAR(255) DEFAULT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('COMMENT ON COLUMN voituresoccasion.id IS \'(DC2Type:uuid)\'');
-        $this->addSql('COMMENT ON COLUMN voituresoccasion.administrateur_id IS \'(DC2Type:uuid)\'');
         $this->addSql('CREATE TABLE messenger_messages (id BIGSERIAL NOT NULL, body TEXT NOT NULL, headers TEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, available_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, delivered_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_75EA56E0FB7336F0 ON messenger_messages (queue_name)');
         $this->addSql('CREATE INDEX IDX_75EA56E0E3BD61CE ON messenger_messages (available_at)');
@@ -66,10 +58,6 @@ final class Version20231020193038 extends AbstractMigration
         $this->addSql('ALTER TABLE contacts ADD CONSTRAINT FK_33401573181A8BA FOREIGN KEY (voiture_id) REFERENCES voituresoccasion (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE equipementsoptions ADD CONSTRAINT FK_7561C74D181A8BA FOREIGN KEY (voiture_id) REFERENCES voituresoccasion (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE horairesouverture ADD CONSTRAINT FK_8C1CC7CBDE8E3089 FOREIGN KEY (jour_semaine) REFERENCES jour_semaine (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE horairesouverture ADD CONSTRAINT FK_8C1CC7CB7EE5403C FOREIGN KEY (administrateur_id) REFERENCES utilisateurs (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE services ADD CONSTRAINT FK_7332E1697EE5403C FOREIGN KEY (administrateur_id) REFERENCES utilisateurs (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE temoignages ADD CONSTRAINT FK_840C8612FB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE voituresoccasion ADD CONSTRAINT FK_253F5FD37EE5403C FOREIGN KEY (administrateur_id) REFERENCES utilisateurs (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
@@ -85,10 +73,6 @@ final class Version20231020193038 extends AbstractMigration
         $this->addSql('ALTER TABLE contacts DROP CONSTRAINT FK_33401573181A8BA');
         $this->addSql('ALTER TABLE equipementsoptions DROP CONSTRAINT FK_7561C74D181A8BA');
         $this->addSql('ALTER TABLE horairesouverture DROP CONSTRAINT FK_8C1CC7CBDE8E3089');
-        $this->addSql('ALTER TABLE horairesouverture DROP CONSTRAINT FK_8C1CC7CB7EE5403C');
-        $this->addSql('ALTER TABLE services DROP CONSTRAINT FK_7332E1697EE5403C');
-        $this->addSql('ALTER TABLE temoignages DROP CONSTRAINT FK_840C8612FB88E14F');
-        $this->addSql('ALTER TABLE voituresoccasion DROP CONSTRAINT FK_253F5FD37EE5403C');
         $this->addSql('DROP TABLE contacts');
         $this->addSql('DROP TABLE equipementsoptions');
         $this->addSql('DROP TABLE horairesouverture');

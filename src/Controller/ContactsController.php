@@ -11,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/contacts')]
 class ContactsController extends AbstractController
@@ -141,5 +143,202 @@ class ContactsController extends AbstractController
             return $this->json(['message' => $e->getMessage()]);
         }   
 
+    }
+
+    private $entityManager;
+    private $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    {
+        $this->entityManager = $entityManager;
+        $this->validator = $validator;
+    }
+
+    /**
+     * @Route("/", methods={"GET"})
+     */
+    public function indexContact(): Response
+    {
+        $contacts = $this->entityManager->getRepository(Contacts::class)->findAll();
+        $data = [];
+
+        foreach ($contacts as $contact) {
+            $data[] = [
+                'id' => $contact->getId(),
+                'nom' => $contact->getNom(),
+                'prenom' => $contact->getPrenom(),
+                'email' => $contact->getEmail(),
+                'numero_telephone' => $contact->getNumeroTelephone(),
+                'message' => $contact->getMessage(),
+                'sujet' => $contact->getSujet(),
+                'voiture' => $contact->getVoiture() ? [
+                    'id' => $contact->getVoiture()->getId(),
+                    'marque' => $contact->getVoiture()->getMarque(),
+                    'modele' => $contact->getVoiture()->getModele(),
+                    'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
+                ] : null,
+            ];
+        }
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/", methods={"POST"})
+     */
+    public function create(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['nom']) || empty($data['prenom']) || empty($data['email']) || empty($data['message'])) {
+            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $contact = new Contacts();
+        $contact->setNom($data['nom']);
+        $contact->setPrenom($data['prenom']);
+        $contact->setEmail($data['email']);
+        $contact->setNumeroTelephone($data['numero_telephone'] ?? null);
+        $contact->setMessage($data['message']);
+        $contact->setSujet($data['sujet'] ?? null);
+
+        if (!empty($data['voiture_id'])) {
+            $voiture = $this->entityManager->getRepository(Voituresoccasion::class)->find($data['voiture_id']);
+
+            if (!$voiture) {
+                return new JsonResponse(['error' => 'Voiture non trouvée'], Response::HTTP_NOT_FOUND);
+            }
+
+            $contact->setVoiture($voiture);
+        }
+
+        $errors = $this->validator->validate($contact);
+
+        if (count($errors) === 0) {
+            $this->entityManager->persist($contact);
+            $this->entityManager->flush();
+
+            $data = [
+                'id' => $contact->getId(),
+                'nom' => $contact->getNom(),
+                'prenom' => $contact->getPrenom(),
+                'email' => $contact->getEmail(),
+                'numero_telephone' => $contact->getNumeroTelephone(),
+                'message' => $contact->getMessage(),
+                'sujet' => $contact->getSujet(),
+                'voiture' => $contact->getVoiture() ? [
+                    'id' => $voiture->getId(),
+                    'marque' => $voiture->getMarque(),
+                    'modele' => $voiture->getModele(),
+                    'annee_mise_en_circulation' => $voiture->getAnneeMiseEnCirculation(),
+                ] : null,
+            ];
+
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Route("/{id}", methods={"GET"})
+     */
+    public function showContact(Contacts $contact): Response
+    {
+        if (!$contact) {
+            return new JsonResponse(['error' => 'Contact non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = [
+            'id' => $contact->getId(),
+            'nom' => $contact->getNom(),
+            'prenom' => $contact->getPrenom(),
+            'email' => $contact->getEmail(),
+            'numero_telephone' => $contact->getNumeroTelephone(),
+            'message' => $contact->getMessage(),
+            'sujet' => $contact->getSujet(),
+            'voiture' => $contact->getVoiture() ? [
+                'id' => $contact->getVoiture()->getId(),
+                'marque' => $contact->getVoiture()->getMarque(),
+                'modele' => $contact->getVoiture()->getModele(),
+                'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
+            ] : null,
+        ];
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/{id}", methods={"PUT"})
+     */
+    public function update(Request $request, Contacts $contact): Response
+    {
+        if (!$contact) {
+            return new JsonResponse(['error' => 'Contact non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['nom']) || empty($data['prenom']) || empty($data['email']) || empty($data['message'])) {
+            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $contact->setNom($data['nom']);
+        $contact->setPrenom($data['prenom']);
+        $contact->setEmail($data['email']);
+        $contact->setNumeroTelephone($data['numero_telephone'] ?? null);
+        $contact->setMessage($data['message']);
+        $contact->setSujet($data['sujet'] ?? null);
+
+        if (!empty($data['voiture_id'])) {
+            $voiture = $this->entityManager->getRepository(Voituresoccasion::class)->find($data['voiture_id']);
+
+            if (!$voiture) {
+                return new JsonResponse(['error' => 'Voiture non trouvée'], Response::HTTP_NOT_FOUND);
+            }
+
+            $contact->setVoiture($voiture);
+        }
+
+        $errors = $this->validator->validate($contact);
+
+        if (count($errors) === 0) {
+            $this->entityManager->flush();
+
+            $data = [
+                'id' => $contact->getId(),
+                'nom' => $contact->getNom(),
+                'prenom' => $contact->getPrenom(),
+                'email' => $contact->getEmail(),
+                'numero_telephone' => $contact->getNumeroTelephone(),
+                'message' => $contact->getMessage(),
+                'sujet' => $contact->getSujet(),
+                'voiture' => $contact->getVoiture() ? [
+                    'id' => $voiture->getId(),
+                    'marque' => $voiture->getMarque(),
+                    'modele' => $voiture->getModele(),
+                    'annee_mise_en_circulation' => $voiture->getAnneeMiseEnCirculation(),
+                ] : null,
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Route("/{id}", methods={"DELETE"})
+     */
+    public function deleteContact(Contacts $contact): Response
+    {
+        if (!$contact) {
+            return new JsonResponse(['error' => 'Contact non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->entityManager->remove($contact);
+        $this->entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

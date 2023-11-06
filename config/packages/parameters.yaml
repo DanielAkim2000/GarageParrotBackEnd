@@ -1,0 +1,3 @@
+parameters:
+    app.upload_directory: '%kernel.project_dir%/public/uploads/images'
+    app.image_base_url: 'http://localhost:8000/uploads/images'

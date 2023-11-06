@@ -3,6 +3,16 @@ app_services:
    controller: App\Controller\ApiController::getServices
    methods: GET
 
+app_contacts:
+   path: /api/contacts
+   controller: App\Controller\ApiController::getContacts
+   methods: GET
+
+app_servicesAdmin:
+   path: /api/servicesAdmin
+   controller: App\Controller\ApiController::getServices
+   methods: GET
+
 app_voitures: 
     path: /api/voitures
     controller: App\Controller\ApiController::getVoitures
@@ -15,6 +25,11 @@ app_temoignages:
 
 app_horaires:
     path: /api/horaires
+    controller: App\Controller\ApiController::getHoraires
+    methods: GET
+
+app_horairesAdmin:
+    path: /api/horairesAdmin
     controller: App\Controller\ApiController::getHoraires
     methods: GET
 
@@ -37,3 +52,96 @@ api_login:
     path: /api/login
     controller: App\Controller\Api\LoginController::ApiLogin
     methods: POST
+
+app_editUsers:
+    path: /api/editUsers/{id}
+    controller: App\Controller\ApiController::editUsers
+    methods: POST
+    requirements:
+        id: '[0-9a-fA-F-]+'
+
+app_deleteEmployes:
+    path: /api/deleteEmploye/{id}
+    controller: App\Controller\ApiController::deleteEmploye
+    methods: DELETE
+    requirements:
+        id: '[0-9a-fA-F-]+'
+
+app_editServices:
+    path: /api/editService/{id}
+    controller: App\Controller\ApiController::editService
+    methods: POST
+    requirements:
+        id: \d+
+
+app_createService:
+    path: /api/createService
+    controller: App\Controller\ApiController::createService
+    methods: POST
+
+app_createVoiture:
+    path: /api/createVoiture
+    controller: App\Controller\ApiController::createVoiture
+    methods: POST
+
+app_createTemoignage:
+    path: /api/createTemoignage
+    controller: App\Controller\ApiController::createTemoignage
+    methods: POST
+
+app_createUtilisateurs:
+    path: /api/createUtilisateur
+    controller: App\Controller\ApiController::createUtilisateur
+    methods: POST
+
+app_createHoraires:
+    path: /api/createHoraire
+    controller: App\Controller\ApiController::createHoraire
+    methods: POST
+
+app_deleteService:
+    path: /api/deleteService/{id}
+    controller: App\Controller\ApiController::deleteService
+    methods: DELETE
+    requirements:
+        id: \d+
+
+app_editVoitures:
+    path: /api/editVoiture/{id}
+    controller: App\Controller\ApiController::editVoiture
+    methods: POST
+    requirements:
+        id: '[0-9a-fA-F-]+'
+
+app_deleteHoraire:
+    path: /api/deleteHoraire/{id}
+    controller: App\Controller\ApiController::deleteHoraire
+    methods: DELETE
+    requirements:
+        id: \d+
+        
+app_deleteVoitures:
+    path: /api/deleteVoiture/{id}
+    controller: App\Controller\ApiController::deleteVoiture
+    methods: DELETE
+    requirements:
+        id: '[0-9a-fA-F-]+'
+
+app_deleteContacts:
+    path: /api/deleteContact/{id}
+    controller: App\Controller\ApiController::deleteContact
+    methods: DELETE
+    requirements:
+        id: \d+
+
+app_editHoraires:
+    path: /api/editHoraire/{id}
+    controller: App\Controller\ApiController::editHoraire
+    methods: POST
+    requirements:
+        id: \d+
+
+app_jour:
+    path: /jour
+    controller: App\Controller\ApiController::getJour
+    methods: get

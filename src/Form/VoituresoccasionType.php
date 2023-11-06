@@ -19,7 +19,6 @@ class VoituresoccasionType extends AbstractType
             ->add('kilometrage')
             ->add('image')
             ->add('description')
-            ->add('administrateur')
         ;
     }
 

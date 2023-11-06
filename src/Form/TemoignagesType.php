@@ -16,7 +16,6 @@ class TemoignagesType extends AbstractType
             ->add('commentaire')
             ->add('note')
             ->add('modere')
-            ->add('utilisateur')
         ;
     }
 

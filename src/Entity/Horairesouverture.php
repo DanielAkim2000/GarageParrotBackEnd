@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * Horairesouverture
  *
- * @ORM\Table(name="horairesouverture", indexes={@ORM\Index(name="IDX_8C1CC7CB7EE5403C", columns={"administrateur_id"})})
+ * @ORM\Table(name="horairesouverture")
  * @ORM\Entity
  */
 class Horairesouverture
@@ -53,28 +53,16 @@ class Horairesouverture
      */
     private $heureFermeture;
 
-    /**
-     * @var Utilisateurs
-     *
-     * @ORM\ManyToOne(targetEntity="Utilisateurs")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="administrateur_id", referencedColumnName="id")
-     * })
-     */
-    private $administrateur;
-    
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getJourSemaine():?JourSemaine
+    public function getJourSemaine(): ?JourSemaine
     {
-        if($this->jourSemaine == NULL){
+        if ($this->jourSemaine == NULL) {
             return NULL;
-        }
-        else
-        {
+        } else {
             return $this->jourSemaine;
         }
     }
@@ -86,22 +74,46 @@ class Horairesouverture
         return $this;
     }
 
-    public function getHeureOuverture(): ?string
+    public function getHeureOuverture(): ?DateTimeInterface
     {
-        return $this->heureOuverture->format('H:i');
+        return $this->heureOuverture;
     }
-
     public function setHeureOuverture(\DateTime $heureOuverture): static
     {
         $heure = new \DateTime($heureOuverture->format('H:i:00'));
         $this->heureOuverture = $heure;
-
         return $this;
     }
 
-    public function getHeureFermeture(): ?string
+    public function getHeureFermeture(): ?DateTimeInterface
     {
-        return $this->heureFermeture->format('H:i');
+        return $this->heureFermeture;
+    }
+    public function getHeureOuvertureFormatted(): ?string
+    {
+        if ($this->heureOuverture !== null) {
+            return $this->heureOuverture->format('H:i');
+        }
+
+        return null;
+    }
+    public function getHeureFermetureFormatted(): ?string
+    {
+        if ($this->heureFermeture !== null) {
+            return $this->heureFermeture->format('H:i');
+        }
+
+        return null;
+    }
+    public function getJourSemaineFormatted(): ?string
+    {
+        $jourSemaine = $this->jourSemaine;
+
+        if ($jourSemaine !== null) {
+            return $jourSemaine->getId(); // Remplacez getId() par la méthode appropriée pour obtenir la valeur souhaitée.
+        }
+
+        return null;
     }
 
     public function setHeureFermeture(\DateTime $heureFermeture): static
@@ -111,18 +123,4 @@ class Horairesouverture
 
         return $this;
     }
-
-    public function getAdministrateur(): ?Utilisateurs
-    {
-        return $this->administrateur;
-    }
-
-    public function setAdministrateur(?Utilisateurs $administrateur): static
-    {
-        $this->administrateur = $administrateur;
-
-        return $this;
-    }
-
-
 }

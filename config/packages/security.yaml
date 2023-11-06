@@ -44,7 +44,40 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         #bloque l acces au donnes 
-        # - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/createUtilisateur,       roles: ROLE_ADMIN }
+        - { path: ^/api/createUtilisateur,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/editUsers/,       roles: ROLE_ADMIN }
+        - { path: ^/api/editUsers/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/deleteEmploye/,       roles: ROLE_ADMIN }
+        - { path: ^/api/deleteEmploye/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/editService/,       roles: ROLE_ADMIN }
+        - { path: ^/api/editService/,       roles: IS_AUTHENTICATED_FULLY  }
+        - { path: ^/api/createService,       roles: ROLE_ADMIN }
+        - { path: ^/api/createService,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/deleteService/,       roles: ROLE_ADMIN }
+        - { path: ^/api/deleteService/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/createHoraire,       roles: ROLE_ADMIN }
+        - { path: ^/api/createHoraire,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/deleteHoraire/,       roles: ROLE_ADMIN }
+        - { path: ^/api/deleteHoraire/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/editVoiture/,       roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/api/editVoiture/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/createVoiture,       roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/api/createVoiture,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/deleteVoiture/,       roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/api/deleteVoiture/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/createTemoignage,       roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/api/createTemoignage,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/employes,       roles: [ROLE_ADMIN] }
+        - { path: ^/api/employes,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/servicesAdmin,       roles: [ROLE_ADMIN] }
+        - { path: ^/api/servicesAdmin,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/contacts,       roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/api/contacts,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/horairesAdmin,       roles: ROLE_ADMIN }
+        - { path: ^/api/horairesAdmin,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/editHoraire/,       roles: ROLE_ADMIN }
+        - { path: ^/api/editHoraire/,       roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

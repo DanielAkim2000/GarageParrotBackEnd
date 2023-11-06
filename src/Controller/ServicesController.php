@@ -3,84 +3,175 @@
 namespace App\Controller;
 
 use App\Entity\Services;
-use App\Form\ServicesType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ImageManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface; 
 
-#[Route('/services')]
 class ServicesController extends AbstractController
 {
-    #[Route('/', name: 'app_services_index', methods: ['GET'])]
-    #[Groups('services')]
-    public function getServices(EntityManagerInterface $entityManager): Response
-    {
-        $services = $entityManager
-        ->getRepository(Services::class)
-        ->findAll();
-        return $this->json([
-            'services' => $services
-        ],200, [],['groups' =>'services']);
+    private $validator;
+    private $entityManager; 
+    private $imageManager;
+
+    public function __construct(
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager,
+        ImageManager $imageManager
+    ) {
+        $this->validator = $validator;
+        $this->entityManager = $entityManager;
+        $this->imageManager = $imageManager;
     }
 
-    #[Route('/new', name: 'app_services_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexServices(): Response
     {
+        $services = $this->entityManager->getRepository(Services::class)->findAll();
+        $data = [];
+
+        foreach ($services as $service) {
+            $imageLink = $this->imageManager->generateImageLink($service->getImageName()); // Utilisez le service ImageManager pour générer le lien vers l'image
+
+            $data[] = [
+                'id' => $service->getId(),
+                'nom' => $service->getNom(),
+                'description' => $service->getDescription(),
+                'image' => $imageLink,
+            ];
+        }
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    public function create(Request $request): Response
+    {
+        $data = $request->request->all();
+
+        if (empty($data['nom'])) {
+            return new JsonResponse(['error' => 'Le champ "nom" est requis'], Response::HTTP_BAD_REQUEST);
+        }
+
         $service = new Services();
-        $form = $this->createForm(ServicesType::class, $service);
-        $form->handleRequest($request);
+        $service->setNom($data['nom']);
+        $service->setDescription($data['description'] ?? null);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($service);
-            $entityManager->flush();
+        if ($request->files->has('image')) {
+            $imageFile = $request->files->get('image');
+            $newImageName = $this->imageManager->upload($imageFile);
+            $service->setImageName($newImageName);
+        }
+    
+        $errors = $this->validator->validate($service);
+    
+        if (count($errors) === 0) {
+            $this->entityManager->persist($service);
+            $this->entityManager->flush();
+    
+            // Utilisez le service ImageManager pour générer le lien vers l'image
+            $imageLink = $this->imageManager->generateImageLink($newImageName);
+    
+            $data = [
+                'id' => $service->getId(),
+                'nom' => $service->getNom(),
+                'description' => $service->getDescription(),
+                'image' => $imageLink,
+            ];
 
-            return $this->redirectToRoute('app_services_index', [], Response::HTTP_SEE_OTHER);
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function update(Request $request, int $id): Response
+    {
+        $service = $this->entityManager->getRepository(Services::class)->find($id);
+
+        if (!$service) {
+            return new JsonResponse(['error' => 'Service non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->renderForm('services/new.html.twig', [
-            'service' => $service,
-            'form' => $form,
-        ]);
-    }
+        $data = $request->request->all();
 
-    #[Route('/{id}', name: 'app_services_show', methods: ['GET'])]
-    public function show(Services $service): Response
-    {
-        return $this->render('services/show.html.twig', [
-            'service' => $service,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_services_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Services $service, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ServicesType::class, $service);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_services_index', [], Response::HTTP_SEE_OTHER);
+        if (empty($data['nom'])) {
+            return new JsonResponse(['error' => 'Le champ "nom" est requis'], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->renderForm('services/edit.html.twig', [
-            'service' => $service,
-            'form' => $form,
-        ]);
-    }
+        $service->setNom($data['nom']);
+        $service->setDescription($data['description'] ?? null);
 
-    #[Route('/{id}', name: 'app_services_delete', methods: ['POST'])]
-    public function delete(Request $request, Services $service, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$service->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($service);
-            $entityManager->flush();
+        if ($request->files->has('image')) {
+            $imageFile = $request->files->get('image');
+            if ($service->getImageName()) {
+                $this->imageManager->remove($service->getImageName());
+            }
+            $newImageName = $this->imageManager->upload($imageFile);
+            $service->setImageName($newImageName);
         }
 
-        return $this->redirectToRoute('app_services_index', [], Response::HTTP_SEE_OTHER);
+        $errors = $this->validator->validate($service);
+
+        if (count($errors) === 0) {
+            $this->entityManager->flush();
+
+            // Utilisez le service ImageManager pour générer le lien vers l'image
+            $imageLink = $this->imageManager->generateImageLink($service->getImageName());
+
+            $data = [
+                'id' => $service->getId(),
+                'nom' => $service->getNom(),
+                'description' => $service->getDescription(),
+                'image' => $imageLink,
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
     }
+
+
+    /**
+     * @Route("/services/{id}", methods={"GET"})
+     */
+    public function showService(int $id): Response
+    {
+        $service = $this->entityManager->getRepository(Services::class)->find($id);
+
+        if (!$service) {
+            return new JsonResponse(['error' => 'Service non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = [
+            'id' => $service->getId(),
+            'nom' => $service->getNom(),
+            'description' => $service->getDescription(),
+            'image' => $service->getImageName(), // Utilise le nom de l'image
+        ];
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/services/{id}", methods={"DELETE"})
+     */
+    public function deleteService(int $id): Response
+    {
+        $service = $this->entityManager->getRepository(Services::class)->find($id);
+
+        if (!$service) {
+            return new JsonResponse(['error' => 'Service non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->entityManager->remove($service);
+        $this->entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
 }

@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/temoignages')]
 class TemoignagesController extends AbstractController
@@ -123,5 +125,143 @@ class TemoignagesController extends AbstractController
         catch(Exception $e){
             return $this->json(['message' => $e->getMessage()]);
         }
+    }
+
+    private $entityManager;
+    private $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    {
+        $this->entityManager = $entityManager;
+        $this->validator = $validator;
+    }
+
+    public function indexTemoignages(): Response
+    {
+        $temoignages = $this->entityManager->getRepository(Temoignages::class)->findAll();
+        $data = [];
+
+        foreach ($temoignages as $temoignage) {
+            $data[] = [
+                'id' => $temoignage->getId(),
+                'nom' => $temoignage->getNom(),
+                'commentaire' => $temoignage->getCommentaire(),
+                'note' => $temoignage->getNote(),
+                'modere' => $temoignage->isModere(),
+            ];
+        }
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/", methods={"POST"})
+     */
+    public function create(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['commentaire']) || empty($data['nom']) || empty($data['note'])) {
+            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $temoignage = new Temoignages();
+        $temoignage->setNom($data['nom'] ?? null);
+        $temoignage->setCommentaire($data['commentaire']);
+        $temoignage->setNote($data['note'] ?? null);
+        $temoignage->setModere($data['modere'] ?? false);
+
+        $errors = $this->validator->validate($temoignage);
+
+        if (count($errors) === 0) {
+            $this->entityManager->persist($temoignage);
+            $this->entityManager->flush();
+
+            $data = [
+                'id' => $temoignage->getId(),
+                'nom' => $temoignage->getNom(),
+                'commentaire' => $temoignage->getCommentaire(),
+                'note' => $temoignage->getNote(),
+                'modere' => $temoignage->isModere(),
+            ];
+
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Route("/{id}", methods={"GET"})
+     */
+    public function showTemoignages(Temoignages $temoignage): Response
+    {
+        if (!$temoignage) {
+            return new JsonResponse(['error' => 'Témoignage non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = [
+            'id' => $temoignage->getId(),
+            'nom' => $temoignage->getNom(),
+            'commentaire' => $temoignage->getCommentaire(),
+            'note' => $temoignage->getNote(),
+            'modere' => $temoignage->isModere(),
+        ];
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/{id}", methods={"PUT"})
+     */
+    public function update(Request $request, Temoignages $temoignage): Response
+    {
+        if (!$temoignage) {
+            return new JsonResponse(['error' => 'Témoignage non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['commentaire'])) {
+            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $temoignage->setNom($data['nom'] ?? null);
+        $temoignage->setCommentaire($data['commentaire']);
+        $temoignage->setNote($data['note'] ?? null);
+        $temoignage->setModere($data['modere'] ?? false);
+
+        $errors = $this->validator->validate($temoignage);
+
+        if (count($errors) === 0) {
+            $this->entityManager->flush();
+
+            $data = [
+                'id' => $temoignage->getId(),
+                'nom' => $temoignage->getNom(),
+                'commentaire' => $temoignage->getCommentaire(),
+                'note' => $temoignage->getNote(),
+                'modere' => $temoignage->isModere(),
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Route("/{id}", methods={"DELETE"})
+     */
+    public function deleteTemoignages(Temoignages $temoignage): Response
+    {
+        if (!$temoignage) {
+            return new JsonResponse(['error' => 'Témoignage non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->entityManager->remove($temoignage);
+        $this->entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }
