@@ -216,7 +216,7 @@ class UtilisateursController extends AbstractController
             return new JsonResponse(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = $request->request->all();
 
         if (empty($data['firstname']) || empty($data['lastname']) || empty($data['email'])) {
             return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);

@@ -200,5 +200,52 @@ class VoituresoccasionController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
+
+    public function filtreVoiture(Request $request)
+    {
+        // Récupérer les données du corps de la requête
+        $data = json_decode($request->getContent(), true);
+
+        // Extraire les paramètres du filtre
+        $kilometrage = $data['kilometrage'] ?? null;
+        $prix = $data['prix'] ?? null;
+        $annee = $data['annee'] ?? null;
+
+        // Construire la requête avec les filtres
+        $queryBuilder = $this->entityManager->getRepository(Voituresoccasion::class)->createQueryBuilder('e');
+        
+        if ($kilometrage !== null) {
+            $queryBuilder->andWhere('e.kilometrage > :kilometrage')->setParameter('kilometrage', $kilometrage);
+        }
+
+        if ($prix !== null) {
+            $queryBuilder->andWhere('e.prix > :prix')->setParameter('prix', $prix);
+        }
+
+        if ($annee !== null) {
+            $queryBuilder->andWhere('e.anneeMiseEnCirculation > :annee')->setParameter('annee', $annee);
+        }
+
+        // Exécuter la requête
+        $voituresoccasion= $queryBuilder->getQuery()->getResult();
+
+        $data = [];
+
+        foreach ($voituresoccasion as $voiture) {
+            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath()); // Génère le lien de l'image
+            $data[] = [
+                'id' => $voiture->getId(),
+                'marque' => $voiture->getMarque(),
+                'modele' => $voiture->getModele(),
+                'annee_mise_en_circulation' => $voiture->getAnneeMiseEnCirculation(),
+                'prix' => $voiture->getPrix(),
+                'kilometrage' => $voiture->getKilometrage(),
+                'image' => $imageLink,
+                'description' => $voiture->getDescription(),
+            ];
+        }
+        // Vous pouvez maintenant renvoyer les entités filtrées sous forme de réponse JSON
+        return new JsonResponse($data,Response::HTTP_OK);
+    }
 }
 

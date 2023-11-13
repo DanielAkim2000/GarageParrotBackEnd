@@ -118,19 +118,24 @@ class HorairesouvertureController extends AbstractController
     {
         $horairesouverture = $this->entityManager->getRepository(Horairesouverture::class)->findAll();
         $data = [];
-
+    
         foreach ($horairesouverture as $horaire) {
             $data[] = [
                 'id' => $horaire->getId(),
-                'jour_semaine' => $horaire->getJourSemaineFormatted(), // Assurez-vous d'ajuster la méthode appropriée pour obtenir la valeur souhaitée.
+                'jour_semaine' => $horaire->getJourSemaineFormatted(),
                 'heure_ouverture' => $horaire->getHeureOuvertureFormatted(),
                 'heure_fermeture' => $horaire->getHeureFermetureFormatted(),
             ];
         }
-
+    
+        // Triez le tableau $data par ordre alphabétique sur le champ 'jour_semaine'
+        usort($data, function ($a, $b) {
+            return strcmp($a['jour_semaine'], $b['jour_semaine']);
+        });
+    
         return new JsonResponse($data, Response::HTTP_OK);
     }
-
+    
     /**
      * @Route("/", methods={"POST"})
      */

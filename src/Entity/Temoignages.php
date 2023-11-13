@@ -98,12 +98,12 @@ class Temoignages
         return $this;
     }
 
-    public function isModere(): ?bool
+    public function isModere(): bool
     {
         return $this->modere;
     }
 
-    public function setModere(?bool $modere): static
+    public function setModere(bool $modere): static
     {
         $this->modere = $modere;
 

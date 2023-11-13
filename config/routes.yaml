@@ -141,6 +141,25 @@ app_editHoraires:
     requirements:
         id: \d+
 
+app_editTemoignages:
+    path: /api/editTemoignage/{id}
+    controller: App\Controller\ApiController::editTemoignage
+    methods: POST
+    requirements:
+        id: \d+
+
+app_deleteTemoignages:
+    path: /api/deleteTemoignage/{id}
+    controller: App\Controller\ApiController::deleteTemoignage
+    methods: DELETE
+    requirements:
+        id: \d+
+
+app_filtre:
+    path: /filtreVoiture
+    controller: App\Controller\ApiController::filtre
+    methods: POST
+
 app_jour:
     path: /jour
     controller: App\Controller\ApiController::getJour

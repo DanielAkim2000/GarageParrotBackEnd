@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\JourSemaine;
+use App\Entity\Temoignages;
 use App\Entity\Voituresoccasion;
 
 class ApiController extends AbstractController
@@ -139,6 +140,21 @@ class ApiController extends AbstractController
         return $this->temoignagesController->create($request);
     }
 
+    public function insertAvis(Request $request,EntityManagerInterface $e)
+    {
+        return $this->temoignagesController->insert($request,$e);
+    }
+
+    public function editTemoignage(Request $request,Temoignages $temoignage)
+    {
+        return $this->temoignagesController->update($request,$temoignage);
+    }
+
+    public function deleteTemoignage(Temoignages $temoignage)
+    {
+        return $this->temoignagesController->deleteTemoignages($temoignage);
+    }
+
     //Voitures
     public function getVoitures()
     {
@@ -158,6 +174,11 @@ class ApiController extends AbstractController
     public function deleteVoiture(Voituresoccasion $voiture)
     {
         return $this->voituresOccasionController->deleteVoiture($voiture);
+    }
+
+    public function filtre(Request $request)
+    {
+        return $this->voituresOccasionController->filtreVoiture($request);
     }
     //Jour
 

@@ -154,22 +154,24 @@ class TemoignagesController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
-    /**
-     * @Route("/", methods={"POST"})
-     */
     public function create(Request $request): Response
     {
-        $data = json_decode($request->getContent(), true);
+        $data = $request->request->all();
 
-        if (empty($data['commentaire']) || empty($data['nom']) || empty($data['note'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (!isset($data['commentaire']) || !isset($data['nom']) || !isset($data['note'])) {
+            return new JsonResponse(['error' => 'Données incomplètes','donnee' => $data], Response::HTTP_BAD_REQUEST);
         }
 
         $temoignage = new Temoignages();
         $temoignage->setNom($data['nom'] ?? null);
         $temoignage->setCommentaire($data['commentaire']);
         $temoignage->setNote($data['note'] ?? null);
-        $temoignage->setModere($data['modere'] ?? false);
+        if($data['modere'] === "false"){
+            $temoignage->setModere(false);
+        }
+        else{
+            $temoignage->setModere(true);
+        }
 
         $errors = $this->validator->validate($temoignage);
 
@@ -211,25 +213,28 @@ class TemoignagesController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
-    /**
-     * @Route("/{id}", methods={"PUT"})
-     */
+
     public function update(Request $request, Temoignages $temoignage): Response
     {
         if (!$temoignage) {
             return new JsonResponse(['error' => 'Témoignage non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = $request->request->all();
 
-        if (empty($data['commentaire'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
-        }
+        if (!isset($data['commentaire']) || !isset($data['nom']) || !isset($data['note'])) {
+            return new JsonResponse(['error' => 'Données incomplètes','donnee' => $data], Response::HTTP_BAD_REQUEST);
+        }        
 
         $temoignage->setNom($data['nom'] ?? null);
         $temoignage->setCommentaire($data['commentaire']);
         $temoignage->setNote($data['note'] ?? null);
-        $temoignage->setModere($data['modere'] ?? false);
+        if($data['modere'] === "false"){
+            $temoignage->setModere(false);
+        }
+        else{
+            $temoignage->setModere(true);
+        }
 
         $errors = $this->validator->validate($temoignage);
 
