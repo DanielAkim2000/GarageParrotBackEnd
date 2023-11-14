@@ -67,6 +67,4 @@ class Equipementsoptions
 
         return $this;
     }
-
-
 }

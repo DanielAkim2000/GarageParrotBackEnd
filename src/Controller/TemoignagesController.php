@@ -13,78 +13,8 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/temoignages')]
 class TemoignagesController extends AbstractController
 {
-    #[Route('/', name: 'app_temoignages_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
-    {
-        $temoignages = $entityManager
-            ->getRepository(Temoignages::class)
-            ->findAll();
-
-        return $this->render('temoignages/index.html.twig', [
-            'temoignages' => $temoignages,
-        ]);
-    }
-
-    #[Route('/new', name: 'app_temoignages_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $temoignage = new Temoignages();
-        $form = $this->createForm(TemoignagesType::class, $temoignage);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($temoignage);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_temoignages_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('temoignages/new.html.twig', [
-            'temoignage' => $temoignage,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_temoignages_show', methods: ['GET'])]
-    public function show(Temoignages $temoignage): Response
-    {
-        return $this->render('temoignages/show.html.twig', [
-            'temoignage' => $temoignage,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_temoignages_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Temoignages $temoignage, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(TemoignagesType::class, $temoignage);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_temoignages_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('temoignages/edit.html.twig', [
-            'temoignage' => $temoignage,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_temoignages_delete', methods: ['POST'])]
-    public function delete(Request $request, Temoignages $temoignage, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$temoignage->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($temoignage);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_temoignages_index', [], Response::HTTP_SEE_OTHER);
-    }
-
     public function getTemoignages(EntityManagerInterface $entityManager): Response
     {
         $temoignages = $entityManager
@@ -158,8 +88,18 @@ class TemoignagesController extends AbstractController
     {
         $data = $request->request->all();
 
-        if (!isset($data['commentaire']) || !isset($data['nom']) || !isset($data['note'])) {
-            return new JsonResponse(['error' => 'Données incomplètes','donnee' => $data], Response::HTTP_BAD_REQUEST);
+        if (!isset($data['commentaire'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le commentaire'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(!isset($data['nom']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le nom'], Response::HTTP_BAD_REQUEST);         
+        }
+
+        if(!isset($data['note']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez la note'], Response::HTTP_BAD_REQUEST);         
         }
 
         $temoignage = new Temoignages();
@@ -193,27 +133,6 @@ class TemoignagesController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"GET"})
-     */
-    public function showTemoignages(Temoignages $temoignage): Response
-    {
-        if (!$temoignage) {
-            return new JsonResponse(['error' => 'Témoignage non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = [
-            'id' => $temoignage->getId(),
-            'nom' => $temoignage->getNom(),
-            'commentaire' => $temoignage->getCommentaire(),
-            'note' => $temoignage->getNote(),
-            'modere' => $temoignage->isModere(),
-        ];
-
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-
     public function update(Request $request, Temoignages $temoignage): Response
     {
         if (!$temoignage) {
@@ -222,9 +141,19 @@ class TemoignagesController extends AbstractController
 
         $data = $request->request->all();
 
-        if (!isset($data['commentaire']) || !isset($data['nom']) || !isset($data['note'])) {
-            return new JsonResponse(['error' => 'Données incomplètes','donnee' => $data], Response::HTTP_BAD_REQUEST);
-        }        
+        if (!isset($data['commentaire'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le commentaire'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(!isset($data['nom']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le nom'], Response::HTTP_BAD_REQUEST);         
+        }
+
+        if(!isset($data['note']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez la note'], Response::HTTP_BAD_REQUEST);         
+        }       
 
         $temoignage->setNom($data['nom'] ?? null);
         $temoignage->setCommentaire($data['commentaire']);
@@ -254,10 +183,6 @@ class TemoignagesController extends AbstractController
             return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
     }
-
-    /**
-     * @Route("/{id}", methods={"DELETE"})
-     */
     public function deleteTemoignages(Temoignages $temoignage): Response
     {
         if (!$temoignage) {

@@ -15,8 +15,6 @@ class ImageManager
         $this->parameterBag = $parameterBag;
     }
 
-    // ...
-
     public function upload(File $file): string
     {
         $uploadDir = $this->parameterBag->get('app.upload_directory');
@@ -38,7 +36,6 @@ class ImageManager
     }
     public function generateImageLink(string $imageName): string
     {
-        // Personnalisez cette logique selon vos besoins
         $imageBaseUrl = $this->parameterBag->get('app.image_base_url');
         return $imageBaseUrl . '/' . $imageName;
     }

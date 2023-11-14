@@ -30,16 +30,13 @@ class VoituresoccasionController extends AbstractController
         $this->entityManager = $entityManager;
         $this->imageManager = $imageManager;
     }
-    /**
-     * @Route("/", methods={"GET"})
-     */
     public function indexVoitures(): Response
     {
         $voituresoccasion = $this->entityManager->getRepository(Voituresoccasion::class)->findAll();
         $data = [];
 
         foreach ($voituresoccasion as $voiture) {
-            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath()); // Génère le lien de l'image
+            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
             $data[] = [
                 'id' => $voiture->getId(),
                 'marque' => $voiture->getMarque(),
@@ -54,16 +51,32 @@ class VoituresoccasionController extends AbstractController
 
         return new JsonResponse($data, Response::HTTP_OK);
     }
-
-    /**
-     * @Route("/", methods={"POST"})
-     */
     public function create(Request $request): Response
     {
         $data = $request->request->all();
 
-        if (empty($data['marque']) || empty($data['modele']) || empty($data['annee_mise_en_circulation']) || empty($data['prix']) || empty($data['kilometrage'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['marque'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le marque'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['modele']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le modèle'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['annee_mise_en_circulation']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'année de mise en circulation'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['prix']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le prix'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['kilometrage']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le kilométrage'], Response::HTTP_BAD_REQUEST);
         }
 
         $voiture = new Voituresoccasion();
@@ -101,17 +114,13 @@ class VoituresoccasionController extends AbstractController
             return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
     }
-
-    /**
-     * @Route("/{id}", methods={"GET"})
-     */
     public function showVoitures(Voituresoccasion $voiture): Response
     {
         if (!$voiture) {
             return new JsonResponse(['error' => 'Voiture non trouvée'], Response::HTTP_NOT_FOUND);
         }
 
-        $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath()); // Génère le lien de l'image
+        $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
         $data = [
             'id' => $voiture->getId(),
             'marque' => $voiture->getMarque(),
@@ -126,9 +135,6 @@ class VoituresoccasionController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
-    /**
-     * @Route("/{id}", methods={"PUT"})
-     */
     public function update(Request $request,string $id): Response
     {
         $voiture = $this->entityManager->getRepository(Voituresoccasion::class)->find($id);
@@ -139,8 +145,28 @@ class VoituresoccasionController extends AbstractController
 
         $data = $request->request->all();
 
-        if (empty($data['marque']) || empty($data['modele']) || empty($data['annee_mise_en_circulation']) || empty($data['prix']) || empty($data['kilometrage'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['marque'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le marque'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['modele']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le modèle'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['annee_mise_en_circulation']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'année de mise en circulation'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['prix']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le prix'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['kilometrage']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le kilométrage'], Response::HTTP_BAD_REQUEST);
         }
 
         $voiture->setMarque($data['marque']);
@@ -163,7 +189,7 @@ class VoituresoccasionController extends AbstractController
 
         if (count($errors) === 0) {
             $this->entityManager->flush();
-            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath()); // Génère le lien de l'image
+            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
             $data = [
                 'id' => $voiture->getId(),
                 'marque' => $voiture->getMarque(),
@@ -181,9 +207,6 @@ class VoituresoccasionController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"DELETE"})
-     */
     public function deleteVoiture(Voituresoccasion $voiture): Response
     {
         if (!$voiture) {
@@ -193,7 +216,6 @@ class VoituresoccasionController extends AbstractController
         $this->entityManager->remove($voiture);
         $this->entityManager->flush();
 
-        // Supprimez l'image associée si nécessaire
         if (!empty($voiture->getImagePath())) {
             $this->imageManager->remove($voiture->getImagePath());
         }
@@ -203,15 +225,12 @@ class VoituresoccasionController extends AbstractController
 
     public function filtreVoiture(Request $request)
     {
-        // Récupérer les données du corps de la requête
         $data = json_decode($request->getContent(), true);
 
-        // Extraire les paramètres du filtre
         $kilometrage = $data['kilometrage'] ?? null;
         $prix = $data['prix'] ?? null;
         $annee = $data['annee'] ?? null;
 
-        // Construire la requête avec les filtres
         $queryBuilder = $this->entityManager->getRepository(Voituresoccasion::class)->createQueryBuilder('e');
         
         if ($kilometrage !== null) {
@@ -226,13 +245,12 @@ class VoituresoccasionController extends AbstractController
             $queryBuilder->andWhere('e.anneeMiseEnCirculation > :annee')->setParameter('annee', $annee);
         }
 
-        // Exécuter la requête
         $voituresoccasion= $queryBuilder->getQuery()->getResult();
 
         $data = [];
 
         foreach ($voituresoccasion as $voiture) {
-            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath()); // Génère le lien de l'image
+            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
             $data[] = [
                 'id' => $voiture->getId(),
                 'marque' => $voiture->getMarque(),
@@ -244,7 +262,6 @@ class VoituresoccasionController extends AbstractController
                 'description' => $voiture->getDescription(),
             ];
         }
-        // Vous pouvez maintenant renvoyer les entités filtrées sous forme de réponse JSON
         return new JsonResponse($data,Response::HTTP_OK);
     }
 }

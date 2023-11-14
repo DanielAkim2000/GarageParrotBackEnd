@@ -35,7 +35,7 @@ class ServicesController extends AbstractController
         $data = [];
 
         foreach ($services as $service) {
-            $imageLink = $this->imageManager->generateImageLink($service->getImageName()); // Utilisez le service ImageManager pour générer le lien vers l'image
+            $imageLink = $this->imageManager->generateImageLink($service->getImageName());
 
             $data[] = [
                 'id' => $service->getId(),
@@ -71,8 +71,6 @@ class ServicesController extends AbstractController
         if (count($errors) === 0) {
             $this->entityManager->persist($service);
             $this->entityManager->flush();
-    
-            // Utilisez le service ImageManager pour générer le lien vers l'image
             $imageLink = $this->imageManager->generateImageLink($newImageName);
     
             $data = [
@@ -119,7 +117,6 @@ class ServicesController extends AbstractController
         if (count($errors) === 0) {
             $this->entityManager->flush();
 
-            // Utilisez le service ImageManager pour générer le lien vers l'image
             $imageLink = $this->imageManager->generateImageLink($service->getImageName());
 
             $data = [
@@ -135,31 +132,6 @@ class ServicesController extends AbstractController
         }
     }
 
-
-    /**
-     * @Route("/services/{id}", methods={"GET"})
-     */
-    public function showService(int $id): Response
-    {
-        $service = $this->entityManager->getRepository(Services::class)->find($id);
-
-        if (!$service) {
-            return new JsonResponse(['error' => 'Service non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = [
-            'id' => $service->getId(),
-            'nom' => $service->getNom(),
-            'description' => $service->getDescription(),
-            'image' => $service->getImageName(), // Utilise le nom de l'image
-        ];
-
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     * @Route("/services/{id}", methods={"DELETE"})
-     */
     public function deleteService(int $id): Response
     {
         $service = $this->entityManager->getRepository(Services::class)->find($id);

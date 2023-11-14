@@ -78,8 +78,6 @@ security:
         - { path: ^/api/horairesAdmin,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/editHoraire/,       roles: ROLE_ADMIN }
         - { path: ^/api/editHoraire/,       roles: IS_AUTHENTICATED_FULLY }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:

@@ -17,94 +17,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/horairesouverture')]
 class HorairesouvertureController extends AbstractController
 {
-    #[Route('/', name: 'app_horairesouverture_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
-    {
-        $horairesouvertures = $entityManager
-            ->getRepository(Horairesouverture::class)
-            ->findAll();
-
-        return $this->render('horairesouverture/index.html.twig', [
-            'horairesouvertures' => $horairesouvertures,
-        ]);
-    }
-
-    #[Route('/new', name: 'app_horairesouverture_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $horairesouverture = new Horairesouverture();
-        $form = $this->createForm(HorairesouvertureType::class, $horairesouverture);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($horairesouverture);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_horairesouverture_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('horairesouverture/new.html.twig', [
-            'horairesouverture' => $horairesouverture,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_horairesouverture_show', methods: ['GET'])]
-    public function show(Horairesouverture $horairesouverture): Response
-    {
-        return $this->render('horairesouverture/show.html.twig', [
-            'horairesouverture' => $horairesouverture,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_horairesouverture_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Horairesouverture $horairesouverture, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(HorairesouvertureType::class, $horairesouverture);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_horairesouverture_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('horairesouverture/edit.html.twig', [
-            'horairesouverture' => $horairesouverture,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_horairesouverture_delete', methods: ['POST'])]
-    public function delete(Request $request, Horairesouverture $horairesouverture, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$horairesouverture->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($horairesouverture);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_horairesouverture_index', [], Response::HTTP_SEE_OTHER);
-    }
-    public function getHoraires(EntityManagerInterface $entityManager): Response
-    {
-        $horairesouvertures = $entityManager
-            ->getRepository(Horairesouverture::class)
-            ->findAll();
-
-        $formattedHoraires = array_map(function ($horairesouverture) {
-            return [
-                'jourSemaine' => $horairesouverture->getJourSemaineFormatted(),
-                'heureOuverture' => $horairesouverture->getHeureOuvertureFormatted(),
-                'heureFermeture' => $horairesouverture->getHeureFermetureFormatted(),
-                // Autres propriétés
-            ];
-        }, $horairesouvertures);
-
-        return $this->json([
-            'horairesouvertures' => $formattedHoraires,
-        ], 200, [], ['groups' => 'horaires']);
-    }
-
     private $entityManager;
     private $validator;
 
@@ -127,24 +39,47 @@ class HorairesouvertureController extends AbstractController
                 'heure_fermeture' => $horaire->getHeureFermetureFormatted(),
             ];
         }
-    
-        // Triez le tableau $data par ordre alphabétique sur le champ 'jour_semaine'
         usort($data, function ($a, $b) {
             return strcmp($a['jour_semaine'], $b['jour_semaine']);
         });
     
         return new JsonResponse($data, Response::HTTP_OK);
     }
-    
-    /**
-     * @Route("/", methods={"POST"})
-     */
+
+    public function getHoraires(EntityManagerInterface $entityManager): Response
+    {
+        $horairesouvertures = $entityManager
+            ->getRepository(Horairesouverture::class)
+            ->findAll();
+
+        $formattedHoraires = array_map(function ($horairesouverture) {
+            return [
+                'jourSemaine' => $horairesouverture->getJourSemaineFormatted(),
+                'heureOuverture' => $horairesouverture->getHeureOuvertureFormatted(),
+                'heureFermeture' => $horairesouverture->getHeureFermetureFormatted(),
+            ];
+        }, $horairesouvertures);
+
+        return $this->json([
+            'horairesouvertures' => $formattedHoraires,
+        ], 200, [], ['groups' => 'horaires']);
+    }
     public function create(Request $request): Response
     {
         $data = $request->request->all();
 
-        if (empty($data['jour_semaine']) || empty($data['heure_ouverture']) || empty($data['heure_fermeture'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['jour_semaine'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le jour de la semaine'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['heure_ouverture']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'heure d\'ouverture'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['heure_fermeture']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'heure de fermeture'], Response::HTTP_BAD_REQUEST);
         }
 
         $jourSemaineId = $data['jour_semaine'];
@@ -154,7 +89,7 @@ class HorairesouvertureController extends AbstractController
             return new JsonResponse(['error' => 'Jour de la semaine introuvable'], Response::HTTP_BAD_REQUEST);
         }
         $horaire = new Horairesouverture();
-        // Assurez-vous d'ajuster les propriétés de $horaire en fonction des données JSON.
+        
         $horaire->setJourSemaine($jourSemaine);
         $horaire->setHeureOuverture(new \DateTime($data['heure_ouverture']));
         $horaire->setHeureFermeture(new \DateTime($data['heure_fermeture']));
@@ -176,28 +111,6 @@ class HorairesouvertureController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"GET"})
-     */
-    public function showHoraire(Horairesouverture $horaire): Response
-    {
-        if (!$horaire) {
-            return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = [
-            'id' => $horaire->getId(),
-            'jour_semaine' => $horaire->getJourSemaineFormatted(),
-            'heure_ouverture' => $horaire->getHeureOuvertureFormatted(),
-            'heure_fermeture' => $horaire->getHeureFermetureFormatted(),
-        ];
-
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     * @Route("/{id}", methods={"PUT"})
-     */
     public function update(Request $request, Horairesouverture $horaire): Response
     {
         if (!$horaire) {
@@ -206,8 +119,18 @@ class HorairesouvertureController extends AbstractController
 
         $data = $request->request->all();
 
-        if (empty($data['jour_semaine']) || empty($data['heure_ouverture']) || empty($data['heure_fermeture'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['jour_semaine'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le jour de la semaine'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['heure_ouverture']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'heure d\'ouverture'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['heure_fermeture']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'heure de fermeture'], Response::HTTP_BAD_REQUEST);
         }
 
         $jourSemaineId = $data['jour_semaine'];
@@ -217,7 +140,6 @@ class HorairesouvertureController extends AbstractController
             return new JsonResponse(['error' => 'Jour de la semaine introuvable'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Assurez-vous d'ajuster les propriétés de $horaire en fonction des données JSON.
         $horaire->setJourSemaine($jourSemaine);
         $horaire->setHeureOuverture(new \DateTime($data['heure_ouverture']));
         $horaire->setHeureFermeture(new \DateTime($data['heure_fermeture']));
@@ -239,9 +161,6 @@ class HorairesouvertureController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"DELETE"})
-     */
     public function deleteHoraire(int $id): Response
     {
         $horaire = $this->entityManager->getRepository(Horairesouverture::class)->find($id);

@@ -110,7 +110,7 @@ class Horairesouverture
         $jourSemaine = $this->jourSemaine;
 
         if ($jourSemaine !== null) {
-            return $jourSemaine->getId(); // Remplacez getId() par la méthode appropriée pour obtenir la valeur souhaitée.
+            return $jourSemaine->getId();
         }
 
         return null;

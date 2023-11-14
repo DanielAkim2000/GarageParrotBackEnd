@@ -130,7 +130,6 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface,PasswordAuth
     public function getRoles(): array
     {
         $roles = $this->roles ?? [];
-        // Assurez-vous que chaque utilisateur a au moins le rôle ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -146,19 +145,16 @@ class Utilisateurs implements UserInterface,PasswordHasherInterface,PasswordAuth
 
     public function hash(string $plainPassword): string
     {
-        // Utiliser l'algorithme bcrypt pour hacher le mot de passe
         $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
 
         return $hashedPassword;
     }
     public function verify(string $hashedPassword, string $submittedPassword): bool
     {
-        // Vérifier si le mot de passe soumis correspond au mot de passe haché
         return password_verify($submittedPassword, $hashedPassword);
     }
     public function needsRehash(string $hashedPassword): bool
     {
-        // Vérifier si le mot de passe nécessite d'être rehaché
         return password_needs_rehash($hashedPassword, PASSWORD_BCRYPT);
     }
      public function setPassword(string $password): static

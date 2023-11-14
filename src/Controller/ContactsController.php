@@ -17,73 +17,40 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/contacts')]
 class ContactsController extends AbstractController
 {
-    #[Route('/', name: 'app_contacts_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
-    {
-        $contacts = $entityManager
-            ->getRepository(Contacts::class)
-            ->findAll();
 
-        return $this->render('contacts/index.html.twig', [
-            'contacts' => $contacts,
-        ]);
+    private $entityManager;
+    private $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    {
+        $this->entityManager = $entityManager;
+        $this->validator = $validator;
     }
 
-    #[Route('/new', name: 'app_contacts_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexContact(): Response
     {
-        $contact = new Contacts();
-        $form = $this->createForm(ContactsType::class, $contact);
-        $form->handleRequest($request);
+        $contacts = $this->entityManager->getRepository(Contacts::class)->findAll();
+        $data = [];
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($contact);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_contacts_index', [], Response::HTTP_SEE_OTHER);
+        foreach ($contacts as $contact) {
+            $data[] = [
+                'id' => $contact->getId(),
+                'nom' => $contact->getNom(),
+                'prenom' => $contact->getPrenom(),
+                'email' => $contact->getEmail(),
+                'numero_telephone' => $contact->getNumeroTelephone(),
+                'message' => $contact->getMessage(),
+                'sujet' => $contact->getSujet(),
+                'voiture' => $contact->getVoiture() ? [
+                    'id' => $contact->getVoiture()->getId(),
+                    'marque' => $contact->getVoiture()->getMarque(),
+                    'modele' => $contact->getVoiture()->getModele(),
+                    'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
+                ] : null,
+            ];
         }
 
-        return $this->renderForm('contacts/new.html.twig', [
-            'contact' => $contact,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_contacts_show', methods: ['GET'])]
-    public function show(Contacts $contact): Response
-    {
-        return $this->render('contacts/show.html.twig', [
-            'contact' => $contact,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_contacts_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Contacts $contact, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ContactsType::class, $contact);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_contacts_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('contacts/edit.html.twig', [
-            'contact' => $contact,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_contacts_delete', methods: ['POST'])]
-    public function delete(Request $request, Contacts $contact, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$contact->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($contact);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_contacts_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     public function insert(Request $request, EntityManagerInterface $entityManager): Response
@@ -145,53 +112,27 @@ class ContactsController extends AbstractController
 
     }
 
-    private $entityManager;
-    private $validator;
-
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
-        $this->entityManager = $entityManager;
-        $this->validator = $validator;
-    }
-
-    /**
-     * @Route("/", methods={"GET"})
-     */
-    public function indexContact(): Response
-    {
-        $contacts = $this->entityManager->getRepository(Contacts::class)->findAll();
-        $data = [];
-
-        foreach ($contacts as $contact) {
-            $data[] = [
-                'id' => $contact->getId(),
-                'nom' => $contact->getNom(),
-                'prenom' => $contact->getPrenom(),
-                'email' => $contact->getEmail(),
-                'numero_telephone' => $contact->getNumeroTelephone(),
-                'message' => $contact->getMessage(),
-                'sujet' => $contact->getSujet(),
-                'voiture' => $contact->getVoiture() ? [
-                    'id' => $contact->getVoiture()->getId(),
-                    'marque' => $contact->getVoiture()->getMarque(),
-                    'modele' => $contact->getVoiture()->getModele(),
-                    'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
-                ] : null,
-            ];
-        }
-
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     * @Route("/", methods={"POST"})
-     */
     public function create(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
 
-        if (empty($data['nom']) || empty($data['prenom']) || empty($data['email']) || empty($data['message'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['nom'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le nom'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['prenom']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le prenom'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['email']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'email'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['message']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le message'], Response::HTTP_BAD_REQUEST);
         }
 
         $contact = new Contacts();
@@ -240,37 +181,6 @@ class ContactsController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"GET"})
-     */
-    public function showContact(Contacts $contact): Response
-    {
-        if (!$contact) {
-            return new JsonResponse(['error' => 'Contact non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = [
-            'id' => $contact->getId(),
-            'nom' => $contact->getNom(),
-            'prenom' => $contact->getPrenom(),
-            'email' => $contact->getEmail(),
-            'numero_telephone' => $contact->getNumeroTelephone(),
-            'message' => $contact->getMessage(),
-            'sujet' => $contact->getSujet(),
-            'voiture' => $contact->getVoiture() ? [
-                'id' => $contact->getVoiture()->getId(),
-                'marque' => $contact->getVoiture()->getMarque(),
-                'modele' => $contact->getVoiture()->getModele(),
-                'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
-            ] : null,
-        ];
-
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-
-    /**
-     * @Route("/{id}", methods={"PUT"})
-     */
     public function update(Request $request, Contacts $contact): Response
     {
         if (!$contact) {
@@ -279,8 +189,23 @@ class ContactsController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (empty($data['nom']) || empty($data['prenom']) || empty($data['email']) || empty($data['message'])) {
-            return new JsonResponse(['error' => 'Données incomplètes'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['nom'])) {
+            return new JsonResponse(['error' => 'Veuillez précisez le nom'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['prenom']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le prenom'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['email']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez l\'email'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(empty($data['message']))
+        {
+            return new JsonResponse(['error' => 'Veuillez précisez le message'], Response::HTTP_BAD_REQUEST);
         }
 
         $contact->setNom($data['nom']);
@@ -327,9 +252,6 @@ class ContactsController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/{id}", methods={"DELETE"})
-     */
     public function deleteContact(Contacts $contact): Response
     {
         if (!$contact) {
