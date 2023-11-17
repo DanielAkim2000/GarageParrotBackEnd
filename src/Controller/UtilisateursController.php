@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -155,5 +156,47 @@ class UtilisateursController extends AbstractController
         $this->entityManager->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("/create-admin-user", name="create_admin_user", methods={"POST"})
+     */
+    public function createAdminUser(Request $request): Response
+    {
+        $email = $request->query->get('email');
+        $password = $request->query->get('password');
+
+         // Vérifier que l'email et le mot de passe sont présents
+         if (empty($email) || empty($password)) {
+            return new JsonResponse(['error' => 'Veuillez fournir une adresse e-mail et un mot de passe'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Créer un nouvel utilisateur
+        $utilisateur = new Utilisateurs();
+        $utilisateur->setEmail($email);
+        $utilisateur->setPassword($password);
+        $utilisateur->setRoles(['ROLE_ADMIN', 'ROLE_USER']); // Ajouter les rôles
+
+        // Valider l'entité
+        $errors = $this->validator->validate($utilisateur);
+
+        if (count($errors) === 0) {
+            // Persister et flusher l'entité
+            $this->entityManager->persist($utilisateur);
+            $this->entityManager->flush();
+
+            // Retourner la réponse avec les données créées
+            $data = [
+                'id' => $utilisateur->getId(),
+                'email' => $utilisateur->getEmail(),
+                'roles' => $utilisateur->getRoles(),
+                'password' => $utilisateur->getPassword()
+            ];
+
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        } else {
+            // Retourner les erreurs de validation
+            return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
     }
 }
