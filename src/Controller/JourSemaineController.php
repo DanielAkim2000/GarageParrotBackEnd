@@ -15,6 +15,24 @@ class JourSemaineController
     {
         $this->entityManager = $entityManager;
     }
+    public function createJoursemaine(): JsonResponse
+    {
+        // Supprimer tous les jours existants avant de les recréer (facultatif)
+        $this->entityManager->getRepository(JourSemaine::class)->truncateTable();
+
+        $weekdays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimache'];
+
+        foreach ($weekdays as $dayName) {
+            $jourSemaine = new JourSemaine();
+            $jourSemaine->setId($dayName);
+
+            $this->entityManager->persist($jourSemaine);
+        }
+
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Weekdays created successfully']);
+    }
     public function listeJoursSemaine()
     {
         $repository = $this->entityManager->getRepository(JourSemaine::class);

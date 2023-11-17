@@ -160,8 +160,10 @@ class UtilisateursController extends AbstractController
 
     public function createAdminUser(Request $request): Response
     {
-        $email = $request->query->get('email');
-        $password = $request->query->get('password');
+        $email = $request->request->get('email');
+        $password = $request->request->get('password');
+        $firstname = $request->request->get('firstname');
+        $lastname = $request->request->get('lastname');
 
          // Vérifier que l'email et le mot de passe sont présents
          if (empty($email) || empty($password)) {
@@ -170,8 +172,8 @@ class UtilisateursController extends AbstractController
 
         // Créer un nouvel utilisateur
         $utilisateur = new Utilisateurs();
-        $utilisateur->setFirstname('Vincent');
-        $utilisateur->setLastname('Parrot');
+        $utilisateur->setFirstname($firstname);
+        $utilisateur->setLastname($lastname);
         $utilisateur->setEmail($email);
         $utilisateur->setPassword($password);
         $utilisateur->setRoles(['ROLE_ADMIN', 'ROLE_USER']); // Ajouter les rôles
@@ -197,5 +199,12 @@ class UtilisateursController extends AbstractController
             // Retourner les erreurs de validation
             return new JsonResponse(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
+    }
+    /**
+     * @Route("/create-admin-user-form", name="create_admin_user_form", methods={"GET"})
+     */
+    public function createAdminUserForm(): Response
+    {
+        return $this->render('create_admin_user.html.twig');
     }
 }
