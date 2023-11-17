@@ -158,9 +158,6 @@ class UtilisateursController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route("/create-admin-user", name="create_admin_user", methods={"POST"})
-     */
     public function createAdminUser(Request $request): Response
     {
         $email = $request->query->get('email');
