@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Contacts;
 use App\Form\ContactsType;
 use App\Entity\Voituresoccasion;
+use App\Service\ImageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,10 +22,13 @@ class ContactsController extends AbstractController
     private $entityManager;
     private $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    private $imageManager;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator,ImageManager $imageManager)
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->imageManager = $imageManager;
     }
 
     public function indexContact(): Response
@@ -33,6 +37,12 @@ class ContactsController extends AbstractController
         $data = [];
 
         foreach ($contacts as $contact) {
+            if($contact->getVoiture()!=null){
+                $imageLink = $this->imageManager->generateImageLink($contact->getVoiture()->getImagePath());
+            }
+            else{
+                $imageLink = null;
+            }
             $data[] = [
                 'id' => $contact->getId(),
                 'nom' => $contact->getNom(),
@@ -46,6 +56,7 @@ class ContactsController extends AbstractController
                     'marque' => $contact->getVoiture()->getMarque(),
                     'modele' => $contact->getVoiture()->getModele(),
                     'annee_mise_en_circulation' => $contact->getVoiture()->getAnneeMiseEnCirculation(),
+                    'image' => $imageLink
                 ] : null,
             ];
         }

@@ -35,7 +35,12 @@ class ServicesController extends AbstractController
         $data = [];
 
         foreach ($services as $service) {
-            $imageLink = $this->imageManager->generateImageLink($service->getImageName());
+            if($service->getImageName() !== null) {
+                $imageLink = $this->imageManager->generateImageLink($service->getImageName());
+            }
+            else{
+                $imageLink = null;
+            }
 
             $data[] = [
                 'id' => $service->getId(),

@@ -36,7 +36,13 @@ class VoituresoccasionController extends AbstractController
         $data = [];
 
         foreach ($voituresoccasion as $voiture) {
-            $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
+            if($voiture->getImagePath() !== null) {
+                $imageLink = $this->imageManager->generateImageLink($voiture->getImagePath());
+            }
+            else
+            {
+               $imageLink = null; 
+            }
             $data[] = [
                 'id' => $voiture->getId(),
                 'marque' => $voiture->getMarque(),
