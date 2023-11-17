@@ -173,6 +173,8 @@ class UtilisateursController extends AbstractController
 
         // Créer un nouvel utilisateur
         $utilisateur = new Utilisateurs();
+        $utilisateur->setFirstname('Vincent');
+        $utilisateur->setLastname('Parrot');
         $utilisateur->setEmail($email);
         $utilisateur->setPassword($password);
         $utilisateur->setRoles(['ROLE_ADMIN', 'ROLE_USER']); // Ajouter les rôles
