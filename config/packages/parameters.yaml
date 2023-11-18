@@ -1,3 +1,3 @@
 parameters:
-    app.upload_directory: '%kernel.project_dir%/public/uploads/images'
-    app.image_base_url: 'https://fathomless-forest-77755-b0efcb8183c4.herokuapp.com/uploads/images'
+    app.upload_directory: 's3://garageparrotbucket/uploads/images'
+    app.image_base_url: 'https://votre-bucket.s3.amazonaws.com/uploads/images'
