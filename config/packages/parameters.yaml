@@ -1,3 +1,7 @@
 parameters:
-    app.upload_directory: 's3://garageparrotbucket/uploads/images'
-    app.image_base_url: 'https://votre-bucket.s3.amazonaws.com/uploads/images'
+    aws_s3_key: '%env(AWS_ACCESS_KEY_ID)%'
+    aws_s3_secret: '%env(AWS_SECRET_ACCESS_KEY)%'
+    aws_s3_region: '%env(AWS_REGION)%'
+    app.s3_bucket: 'garageparrotbucket'
+    app.upload_directory: 'uploads/images'
+    app.image_base_url: 'https://garageparrotbucket.s3.eu-central-1.amazonaws.com/uploads/images'
