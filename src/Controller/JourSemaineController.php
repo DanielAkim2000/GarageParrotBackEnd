@@ -15,6 +15,10 @@ class JourSemaineController
     {
         $this->entityManager = $entityManager;
     }
+
+    /**
+ * @Route("/create-jour-semaine", name="create_weekdays", methods={"GET"})
+ */
     public function createJoursemaine(): JsonResponse
     {
         // Supprimer tous les jours existants avant de les recréer (facultatif)

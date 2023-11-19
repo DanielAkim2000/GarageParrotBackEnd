@@ -164,13 +164,3 @@ app_jour:
     path: /jour
     controller: App\Controller\ApiController::getJour
     methods: get
-
-app_creatAdmin:
-    path: /create-admin-user
-    controller: App\Controller\UtilisateursController::createAdminUser
-    methods: POST
-
-create_weekdays:
-    path: /create-jour-semaine
-    controller: App\Controller\JourSemaineController::createJoursemaine
-    methods: get    
