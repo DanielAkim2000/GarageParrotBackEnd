@@ -172,5 +172,5 @@ app_creatAdmin:
 
 create_weekdays:
     path: /create-jour-semaine
-    controller: 'App\Controller\JourSemaineController::createJoursemaine'
-    methods: ['GET']    
+    controller: App\Controller\JourSemaineController::createJoursemaine
+    methods: get    
