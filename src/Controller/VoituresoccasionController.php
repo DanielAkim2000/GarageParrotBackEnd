@@ -146,7 +146,7 @@ class VoituresoccasionController extends AbstractController
         $voiture = $this->entityManager->getRepository(Voituresoccasion::class)->find($id);
 
         if (!$voiture) {
-            return new JsonResponse(['error' => 'Service non trouvé'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => 'Voiture non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
         $data = $request->request->all();

@@ -83,6 +83,7 @@ class UtilisateursController extends AbstractController
         $utilisateur->setLastname($data['lastname']);
         $utilisateur->setEmail($data['email']);
         $utilisateur->setPassword($data['password']);
+        $utilisateur->setRoles(["ROLE_USER"]);
 
         $errors = $this->validator->validate($utilisateur);
 

@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/contacts')]
 class ContactsController extends AbstractController
 {
 

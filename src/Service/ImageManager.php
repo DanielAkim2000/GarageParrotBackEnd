@@ -1,7 +1,5 @@
 <?php 
 
-// App\Service\ImageManager.php
-
 namespace App\Service;
 
 use Aws\S3\Exception\S3Exception;
@@ -42,7 +40,6 @@ class ImageManager
         $bucketName = $this->parameterBag->get('app.s3_bucket');
         $uploadDirectory = $this->parameterBag->get('app.upload_directory');
 
-        // Utiliser le client AWS S3 pour supprimer le fichier du compartiment S3
         $this->s3Client->deleteObject([
             'Bucket' => $bucketName,
             'Key' => $uploadDirectory.'/'.$fileName,
@@ -59,7 +56,6 @@ class ImageManager
         $bucketName = $this->parameterBag->get('app.s3_bucket');
         $uploadDirectory = $this->parameterBag->get('app.upload_directory');
 
-        // Configuration du client S3
         $s3Client = new S3Client([
             'region' => $this->parameterBag->get('aws_s3_region'),
             'version' => 'latest',
