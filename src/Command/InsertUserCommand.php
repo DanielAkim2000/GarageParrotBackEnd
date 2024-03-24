@@ -41,7 +41,7 @@ class InsertUserCommand extends Command
         $adminUser->setLastname($input->getArgument('lastname'));
         $adminUser->setEmail($input->getArgument('email'));
         $adminUser->setRoles(['ROLE_ADMIN', 'ROLE_USER']); // Roles admin et user
-        $adminUser->setPassword($input->getArgument('password')); // À changer en utilisant une meilleure méthode de hachage en production
+        $adminUser->setPassword($input->getArgument('password')); //
 
         $this->entityManager->persist($adminUser);
         $this->entityManager->flush();
